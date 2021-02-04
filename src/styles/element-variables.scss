@@ -1,0 +1,15 @@
+/*
+Write your variables here. All available variables can be
+found in element-ui/packages/theme-chalk/src/common/var.scss.
+For example, to overwrite the theme color:
+*/
+// $--color-primary: teal;
+$--color-primary: #409EFF;
+
+/* icon font path, required */
+$--font-path: '~element-ui/lib/theme-chalk/fonts';
+
+@import "node_modules/element-ui/packages/theme-chalk/src/index";
+
+/* 此文件引入了Element UI大量scss样式文件，如果将全局变量写在此文件中，将导致热更新非常慢，
+故将全局变量剥离到单独的global.scss文件中！！ */

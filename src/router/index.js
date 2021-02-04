@@ -1,0 +1,220 @@
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+import UIFrame from '@/components/UIFrame'
+import dynamicRouter from './modules/dynamic'
+
+Vue.use(VueRouter)
+
+const routes = [
+  {
+    path: '/login',
+    component: () => import('@/views/login/index'),
+    hidden: true
+  },
+
+  {
+    path: '/newLogin',
+    component: () => import('@/views/newLogin/index'),
+    hidden: true
+  },
+
+  /*
+  {
+    path: '/user',
+    name: 'user management',
+    component: UIFrame,
+    hidden: true,
+    children: [
+      {
+        path: 'user-table',
+        name: 'UserTable',
+        component: () => import('@/views/user/user-tree-table'),
+        meta: { title: '用户管理'}
+      },
+    ]
+  },
+  */
+
+  {
+    path: '/',
+    name: 'Blank',
+    component: UIFrame,
+    meta: { title: '功能展示', icon: 'el-icon-notebook-2'},
+    children: [
+      {
+        path: 'welcome',
+        name: 'Welcome',
+        component: () => import('@/components/NestedView'),
+        meta: { group: true, title: '文档及源码' },
+        children: [
+          {
+            path: 'document',
+            name: 'Document',
+            component: () => import('@/views/HelloWorld'),
+            meta: { title: '文档说明', icon: 'el-icon-reading'},
+          },
+
+          {
+            path: 'github',
+            name: 'Github',
+            component: () => import('@/views/HelloWorld'),
+            meta: { title: 'GitHub', icon: 'el-icon-position'},
+          },
+
+        ]
+      },
+
+      {
+        path: 'business',
+        name: 'Business',
+        component: () => import('@/components/NestedView'),
+        meta: { group: true, title: '业务相关' },
+        children: [
+          {
+            path: 'account-list',
+            name: 'AccountList',
+            component: () => import('@/views/business/data-list-view'),
+            props: {entity: 'Account'},
+            meta: { title: '客户管理', icon: 'el-icon-s-custom'}
+          },
+        ]
+      },
+
+      {
+        path: 'user-manager',
+        name: 'UserManager',
+        component: () => import('@/components/NestedView'),
+        meta: { group: true, title: '组织架构' },
+        children: [
+          {
+            path: 'user-list',
+            name: 'UserList',
+            component: () => import('@/views/user/user-tree-table'),
+            meta: { title: '用户管理', icon: 'el-icon-user'}
+          },
+        ]
+      },
+
+    ]
+  },
+
+  dynamicRouter, /* 动态路由分离到单独的文件中 */
+
+  {
+    path: '/system',
+    name: 'SystemManager',
+    component: UIFrame,
+    meta: { title: '系统管理', icon: 'el-icon-setting', svgIcon: 'setting' },
+    children: [
+      {
+        path: 'entity-manager/:entity',
+        name: 'EntityManager',
+        component: () => import('@/views/system/entity-manager'),
+        props: true,
+        hidden: true, /* 此页面已废弃，用entity-field-table替代！！ */
+        meta: { title: '实体字段管理', icon: '' }
+      },
+
+      {
+        path: 'field-manager/:entity',
+        name: 'FieldManager',
+        component: () => import('@/views/system/entity-field-table'),
+        props: true,
+        hidden: true,
+        meta: { title: '字段管理', icon: '', activeRoute: '/system/metadata/entity-list' },
+      },
+
+      {
+        path: 'form-layout/:entity',
+        name: 'FormLayout',
+        component: () => import('@/views/system/form-layout'),
+        hidden: true,
+        props: true,
+        meta: { title: '表单设计', icon: '', /*, keepAlive: false */ activeRoute: '/system/metadata/entity-list' }
+      },
+
+      {
+        path: 'list-setting/:entity',
+        name: 'ListSetting',
+        component: () => import('@/views/business/data-list-view'),
+        hidden: true,
+        props: true,
+        meta: { title: '列表设计', icon: '', /*, keepAlive: false */ activeRoute: '/system/metadata/entity-list' }
+      },
+
+      {
+        path: 'metadata',
+        name: 'Metadata',
+        component: () => import('@/components/NestedView'),
+        meta: { group: true, title: '元数据设置' },
+        children: [
+          {
+            path: 'entity-list',
+            name: 'EntityList',
+            component: () => import('@/views/system/entity-list'),
+            meta: { title: '实体管理', icon: 'el-icon-coin' }
+          },
+
+          {
+            path: 'entity-relation',
+            name: 'EntityRelation',
+            hidden: true, /* 尚未实现，暂时隐藏 */
+            component: () => import('@/views/system/entity-list'),
+            meta: { title: '实体关系', icon: 'el-icon-connection' }
+          },
+        ]
+      },
+
+      {
+        path: 'data-dict',
+        name: 'DataDict',
+        component: () => import('@/components/NestedView'),
+        meta: { group: true, title: '数据字典' },
+        children: [
+          {
+            path: 'option-manager',
+            name: 'OptionManager',
+            component: () => import('@/views/system/data-dict/option-manager'),
+            meta: { title: '单选项管理', icon: 'el-icon-s-operation' }
+          },
+
+          {
+            path: 'tag-manager',
+            name: 'TagManager',
+            component: () => import('@/views/system/data-dict/tag-manager'),
+            meta: { title: '多选项管理', icon: 'el-icon-files' }
+          },
+        ]
+      },
+
+
+    ]
+  },
+
+  {
+    path: '/test',
+    name: 'Test content',
+    component: UIFrame,
+    hidden: true,
+    children: [
+      {
+        path: 'test-vxe-table',
+        name: 'test vxe table',
+        component: () => import('@/views/test/test-vxe-table')
+      },
+
+      {
+        path: 'test-el-form',
+        name: 'test el form',
+        component: () => import('@/views/test/test-el-form')
+      }
+    ]
+  }
+
+]
+
+const router = new VueRouter({
+  routes
+})
+
+export default router

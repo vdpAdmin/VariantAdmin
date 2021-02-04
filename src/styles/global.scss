@@ -1,0 +1,78 @@
+/* 全局css变量 */
+
+$--color-primary: #409EFF;
+
+.primary-color {
+  color: $--color-primary;
+}
+
+.el-header {
+  background-color: #ffffff;
+  color: #333;
+  height: 54px !important;
+  line-height: 54px;
+  font-size: 12px;
+}
+
+/* 修改表单字段标签、radio标签字体大小 */
+.el-form-item__label, .el-radio__label {
+  font-size: 13px;
+}
+
+/* 修改表单select下拉框条目字体大小 */
+.el-select-dropdown__item {
+  font-size: 12px !important;
+}
+
+/* 修改input前、后置元素宽度 */
+.el-input-group__append, .el-input-group__prepend {
+  padding: 0 15px;
+}
+
+::v-deep .el-table th.gutter { /* 解决表头与内容列不对齐差1个像素的问题！！ */
+  display: table-cell !important;
+}
+
+/* 滚动条样式 begin */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  width: 8px;
+  background: rgba(#101F1C, 0.1);
+  -webkit-border-radius: 2em;
+  -moz-border-radius: 2em;
+  border-radius: 2em;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(#101F1C, 0.35);
+  background-clip: padding-box;
+  min-height: 28px;
+  -webkit-border-radius: 2em;
+  -moz-border-radius: 2em;
+  border-radius: 2em;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(#101F1C, 0.85);
+}
+
+* {//Firefox浏览器滚动条样式
+  scrollbar-color: #e5e5e5 #f7f7f9; //滚动条轨道颜色、滚动条滑块的颜色
+  scrollbar-width: thin;     //thin模式下滚动条两端的三角按钮会消失
+}
+
+
+/*
+body {//IE浏览器滚动条样式
+  scrollbar-shadow-color: #e5e5e5;
+  scrollbar-face-color: #e5e5e5;
+  scrollbar-base-color: #ffffff;
+  scrollbar-arrow-color: #444040;
+}
+*/
+
+/* 滚动条样式 end */
