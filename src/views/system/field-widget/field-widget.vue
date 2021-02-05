@@ -530,10 +530,6 @@
         }
 
         const requiredValidator = (rule, value, callback) => {
-          //console.log('rule')
-          //console.log(rule)
-          //console.log(this.formModel[rule.field])
-
           /* 当字段为Boolean类型时，字段值false，isEmptyStr函数返回true，故须增加!==false判断 */
           if ((isEmptyStr(this.formModel[rule.field]) && (this.formModel[rule.field] !== false))
               || (this.formModel[rule.field] === null)) {
@@ -639,8 +635,6 @@
       },
 
       beforePictureUpload(file) {
-        //console.log(this.fieldProps)
-        //console.log('fileType is: ' + file.type)
         let fileTypeCheckResult = false
         if (!!this.fieldProps && !!this.fieldProps.fieldViewModel && !!this.fieldProps.fieldViewModel.uploadFileTypes) {
           let uploadFileTypes = this.fieldProps.fieldViewModel.uploadFileTypes
@@ -709,8 +703,6 @@
       },
 
       beforeFileUpload(file) {
-        //console.log('fileType is: ' + file.type)
-
         let fileTypeCheckResult = false
         let extFileName = file.name.substring(file.name.lastIndexOf('.') + 1)
         if (!!this.fieldProps && !!this.fieldProps.fieldViewModel && !!this.fieldProps.fieldViewModel.uploadFileTypes) {

@@ -8,32 +8,9 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/login',
-    component: () => import('@/views/login/index'),
-    hidden: true
-  },
-
-  {
-    path: '/newLogin',
     component: () => import('@/views/newLogin/index'),
     hidden: true
   },
-
-  /*
-  {
-    path: '/user',
-    name: 'user management',
-    component: UIFrame,
-    hidden: true,
-    children: [
-      {
-        path: 'user-table',
-        name: 'UserTable',
-        component: () => import('@/views/user/user-tree-table'),
-        meta: { title: '用户管理'}
-      },
-    ]
-  },
-  */
 
   {
     path: '/',

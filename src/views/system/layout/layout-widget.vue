@@ -13,7 +13,7 @@
 
           <el-row v-for="(rowItem, rowIdx) in sectionItem.rows " :key="rowItem.id" :gutter="rowItem.gutter"
                   @click.native.stop="clickOnRow(rowItem, sectionItem)"
-                  :class="{'selected': (!!layout.activeRow) && (rowItem.id === layout.activeRow.id)}"
+                  :class="{'selected': (!!layout.activeRow) && (rowItem.id === layout.activeRow.id), 'not-label-top': layout.labelPosition === 'left'}"
                   :style="{'margin-bottom': !!layout.lineSpacing ? layout.lineSpacing + 'px' : '16px'}"
                   class="form-row" style="">
 
@@ -269,10 +269,13 @@ export default {
     .el-row.form-row {
       padding: 2px;
       border: 1px dotted rgba(170, 170, 170, 0.75);
-      height: 36px;  /* 添加此行，解决IE单元格垂直居中问题！！ */
       margin-top: 2px !important;
       margin-right: 2px !important;
       margin-left: 2px !important;
+    }
+
+    .el-row.not-label-top {
+      height: 36px;  /* 添加此行，解决IE单元格垂直居中问题！！ */
     }
 
     .el-row.selected {

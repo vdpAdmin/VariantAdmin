@@ -4,7 +4,10 @@
     <el-tabs type="card" ref="formTabs" :value="layout.activeTabName">
       <el-tab-pane v-for="tabItem in layout.formTabs" :key="tabItem.id" :name="tabItem.name" :label="tabItem.title">
         <layout-section accordion v-for="sectionItem in tabItem.sections" :key="sectionItem.id" :value="['001']">
-          <layout-section-item :title="sectionItem.title" :disabled="false" name="001">
+          <layout-section-item :title="sectionItem.title" :disabled="false" name="001"
+                               :class="{'no-show-title': sectionItem.showSectionTitle === false,
+                                        'no-show-splitter': sectionItem.showSplitter === false,
+                                        'no-show-arrow': sectionItem.showArrowIcon === false}">
             <el-row v-for="rowItem in sectionItem.rows " :key="rowItem.id" :gutter="rowItem.gutter"
                     :style="{'margin-bottom': !!layout.lineSpacing ? layout.lineSpacing + 'px' : '16px'}"
                     style="margin-top: 2px;margin-right: 2px;margin-left: 2px">
@@ -109,24 +112,6 @@
 
     methods: {
       buildFormRules() {
-        //console.log('formState: ' + this.formState)
-
-        // const requiredValidator = (rule, value, callback) => {
-        //   console.log('rule')
-        //   console.log(rule)
-        //   //console.log(this.formModel[rule.field])
-        //
-        //   /* 当字段为Boolean类型时，字段值false，isEmptyStr函数返回true，故须增加!==false判断 */
-        //   if ((isEmptyStr(this.formModel[rule.field]) && (this.formModel[rule.field] !== false))
-        //       || (this.formModel[rule.field] === null)) {
-        //     //console.log( this.fieldPropsMap[rule.field] )
-        //     //console.log( this.formModel[rule.field] )
-        //     callback(new Error('[' + rule.label + ']不能为空'))
-        //   } else {
-        //     callback()
-        //   }
-        // }
-
         const result = {}
         //const result = this.rules
         if (!!this.fieldPropsMap) {
@@ -157,27 +142,6 @@
                 })
               }
             }
-
-            // /* 添加空值校验函数 */
-            // if (isNotNull(propsMap[fieldName].nullable) && (propsMap[fieldName].nullable === false)) {
-            //   //console.log('fieldName: ' + fieldName)
-            //
-            //   if (!result[fieldName]) {
-            //     result[fieldName] = new Array(0)
-            //   }
-            //
-            //   let newRule = {
-            //     required: true,
-            //     validator: requiredValidator,
-            //     trigger: ['blur'],
-            //     label: propsMap[fieldName].label, /* 传入字段label用于错误提示！ */
-            //   }
-            //   if (propsMap[fieldName].type === 'Tag') {  /* Tag字段需要设置校验对象type属性为array!! */
-            //     newRule.type = 'array'
-            //     //console.log(newRule)
-            //   }
-            //   result[fieldName].push(newRule)
-            // }
 
             /* 添加字段自定义校验函数 */
             if (!!propsMap[fieldName].fieldViewModel && !!propsMap[fieldName].fieldViewModel.validators) {
@@ -214,8 +178,6 @@
           }
         }
 
-        //console.log('rules is: ')
-        //console.log(result)
         this.rules = result
       },
 
@@ -271,6 +233,18 @@
     padding-bottom: -2px;
     border-bottom: 1px solid #eeeeee;
     margin-bottom: 6px;
+  }
+
+  .el-collapse-item.no-show-title ::v-deep .el-collapse-item__header {
+    display: none !important;
+  }
+
+  .el-collapse-item.no-show-splitter ::v-deep .el-collapse-item__header {
+    border-bottom-width: 0 !important;
+  }
+
+  .el-collapse-item.no-show-arrow ::v-deep .el-collapse-item__arrow {
+    display: none !important;
   }
 
   ::v-deep .el-collapse-item__content {

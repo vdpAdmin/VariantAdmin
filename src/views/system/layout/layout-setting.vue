@@ -45,12 +45,12 @@
         </el-form-item>
         <el-form-item label="是否显示区块标题区：">
           <el-radio-group v-model="layout.activeSection.showSectionTitle">
-            <el-radio :label="true">是</el-radio>
-            <el-radio :label="false">否</el-radio>
+            <el-radio :label="true" @change="handleTitleShowStatus">是</el-radio>
+            <el-radio :label="false" @change="handleTitleShowStatus">否</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="是否显示箭头图标：">
-          <el-radio-group v-model="layout.activeSection.showSplitter">
+          <el-radio-group v-model="layout.activeSection.showArrowIcon">
             <el-radio :label="true">是</el-radio>
             <el-radio :label="false">否</el-radio>
           </el-radio-group>
@@ -61,12 +61,14 @@
             <el-radio :label="false">否</el-radio>
           </el-radio-group>
         </el-form-item>
+        <!--
         <el-form-item label="区块是否默认收起：">
           <el-radio-group v-model="layout.activeSection.openSplitter">
             <el-radio :label="true">是</el-radio>
             <el-radio :label="false">否</el-radio>
           </el-radio-group>
         </el-form-item>
+        -->
       </el-form>
     </div>
 
@@ -108,9 +110,11 @@
           </el-button-group>
         </el-form-item>
         -->
+        <!--
         <el-form-item label="字段占位内容：">
           <el-input type="text" class="field-placeholder-input"></el-input>
         </el-form-item>
+        -->
       </el-form>
     </div>
 
@@ -194,6 +198,13 @@ export default {
 
     formLabelWidthChanged(currentValue, oldValue) {
       this.$forceUpdate(); /* 强制刷新，立即更新表单所有字段标签宽度！！ */
+    },
+
+    handleTitleShowStatus(value) {
+      if (value === false) {
+        this.layout.activeSection.showArrowIcon = false
+        this.layout.activeSection.showSplitter = false
+      }
     },
 
   }

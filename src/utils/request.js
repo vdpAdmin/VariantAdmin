@@ -104,7 +104,7 @@ service.interceptors.response.use(
           let curPath = router.currentRoute.fullPath
           //console.log(curPath)
           sessionStorage.removeItem('userId')
-          router.replace({path: `/newLogin?redirect=${curPath}`})
+          router.replace({path: `/login?redirect=${curPath}`})
         }).catch(() => {
           //
         })

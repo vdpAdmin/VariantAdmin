@@ -48,7 +48,7 @@ export function createLayoutObj(eventBus) {
 
     createRowCells () {
       const rowCells = [
-        { id: 'cell' + generateId(), span: 6, fields: [] },
+        { id: 'cell' + generateId(), span: 12, fields: [] },
         { id: 'cell' + generateId(), span: 12, fields: [] }
         // {'id': 'cell' + generateId(), 'span': 6, fields: []}
       ]

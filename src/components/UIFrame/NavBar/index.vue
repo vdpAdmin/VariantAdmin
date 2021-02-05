@@ -66,7 +66,7 @@
             */
             sessionStorage.removeItem('user')
             sessionStorage.removeItem('userId')
-            this.$router.push('/newLogin')
+            this.$router.push('/login')
           }).catch(res => {
             this.$message({ message: res.message, type: 'error' })
           })
