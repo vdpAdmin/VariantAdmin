@@ -168,25 +168,7 @@ const routes = [
     ]
   },
 
-  {
-    path: '/test',
-    name: 'Test content',
-    component: UIFrame,
-    hidden: true,
-    children: [
-      {
-        path: 'test-vxe-table',
-        name: 'test vxe table',
-        component: () => import('@/views/test/test-vxe-table')
-      },
 
-      {
-        path: 'test-el-form',
-        name: 'test el form',
-        component: () => import('@/views/test/test-el-form')
-      }
-    ]
-  }
 
 ]
 

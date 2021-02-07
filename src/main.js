@@ -7,7 +7,6 @@ import './icons'
 import 'babel-polyfill'
 import './ieMouseEventFix'  /* 解决：NavMenu组件折叠之后，鼠标滑过menu，在IE环境下报错! */
 import './plugins/element.js'
-import './plugins/vxe-table.js'
 import './plugins/simple-table.js'
 import './plugins/custom-form-components.js'
 import './router-guard'

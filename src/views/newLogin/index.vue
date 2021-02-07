@@ -13,7 +13,7 @@
 
     <el-main>
       <el-container>
-        <el-main>
+        <el-main class="login-main">
           <div class="login-panel">
             <!-- logo -->
             <div class="login-title">
@@ -190,6 +190,10 @@
 
   .el-container, .el-main {
     padding-bottom: 3px;
+  }
+
+  .login-main {
+    //position: relative;
   }
 
   .login-panel {
