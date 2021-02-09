@@ -101,6 +101,10 @@
     ::v-deep .el-table__header-wrapper thead th > .cell {
       white-space: nowrap !important;  /* 禁止表头换行 */
     }
+
+    ::v-deep .el-table__body-wrapper {
+      //height: 100% !important;
+    }
   }
 
 </style>

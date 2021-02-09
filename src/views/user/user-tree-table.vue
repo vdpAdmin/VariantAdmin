@@ -27,9 +27,9 @@
         </div>
       </el-header>
 
-      <el-main>
+      <el-main ref="tableContainer">
         <div style="height: 100%">
-          <SimpleTable :columns="columns" :data="tableData" :pager="page" :show-check-box="true"
+          <SimpleTable :columns="columns" :data="tableData" :pager="page" :show-check-box="true" :height="tableHeight + 'px'"
                        @handleSizeChange="handleSizeChange" @handleCurrentChange="handleCurrentChange"
                        table-size="small" table-width="100% !important">
             <el-table-column slot="table_operation" align="center" label="操作" width="150" :resizable="false">
@@ -119,6 +119,7 @@
           children: 'children',
           label: 'label'
         },
+        tableHeight: 100,
 
         keyword: '',
         searchFilter: '',
@@ -148,10 +149,21 @@
       },
     },
     mounted() {
+      this.$nextTick(() => {
+        this.resizeTableHeight()
+      })
+      window.onresize = () => {
+        this.resizeTableHeight()
+      }
+
       this.initTreeData()
       this.initTableData()
     },
     methods: {
+      resizeTableHeight() {  /* table自适应高度 */
+        this.tableHeight = this.$refs.tableContainer.$el.offsetHeight - 42
+      },
+
       // 改变分页大小处理
       handleSizeChange(val) {
         this.page.limit = val
@@ -406,7 +418,7 @@
 
   ::v-deep #simpleTableFooter.el-footer {
     border-left: 1px solid #EBEEF5;
-    height: 48px !important;
-    padding-top: 8px !important;
+    //height: 48px !important;
+    //padding-top: 8px !important;
   }
 </style>

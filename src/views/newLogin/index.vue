@@ -63,11 +63,11 @@
           </div>
         </el-main>
 
-        <el-footer>
+        <el-footer class="external-link">
           <div>
             <p>
-              <a><svg-icon icon-class="github" />GitHub</a>
-              <a><svg-icon icon-class="document" />文档</a>
+              <a href="https://github.com/vdpAdmin/VariantAdmin" target="_blank"><svg-icon icon-class="github" />GitHub</a>
+              <a href="https://www.yuque.com/variantdev/atxy8t" target="_blank"><svg-icon icon-class="document" />文档</a>
             </p>
           </div>
         </el-footer>
@@ -151,7 +151,7 @@
                 sessionStorage.setItem('user', userInfo.user) // 保存用户到本地会话
                 sessionStorage.setItem('userId', res.data) // 保存用户Id到本地会话
                 // this.$store.commit('menuRouteLoaded', false) // 要求重新加载导航菜单
-                this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+                this.$router.push({ path: this.redirect || '/welcome/home', query: this.otherQuery })
                 store.commit({type: 'setReLoginFlag', reLoginFlag: false})
               }
             }).catch(res => {
@@ -163,7 +163,7 @@
         })
       },
 
-      getOtherQuery(query) {
+      getOtherQuery(query) { /* 复制url参数值 */
         return Object.keys(query).reduce((all, cur) => {
           if (cur !== 'redirect') {
             all[cur] = query[cur]
@@ -171,7 +171,6 @@
           return all
         }, {})
       },
-
 
     }
   }
@@ -193,16 +192,21 @@
   }
 
   .login-main {
-    //position: relative;
+    position: relative;
+    text-align: center;
   }
 
   .login-panel {
     background-color: #f8f8f8 !important;
     width: 420px;
-    position: absolute;
+    //position: absolute;
+    //left: 50%;
+    //top: 50%;
+    //transform: translate(-50%, -75%);
+    position: relative;
+    top: 20%;
     left: 50%;
-    top: 50%;
-    transform: translate(-50%, -75%);
+    transform: translateX(-50%);
     box-shadow: 0 0 100px rgba(0,0,0,.08);
 
     .login-title {
@@ -214,12 +218,15 @@
         width: 56px;
         height: 36px;
         position: absolute;
-        top: 6px;
+        top: 13px;
         left: 106px;
       }
 
       .app-title {
-        margin-left: 60px;
+        margin: 0 0 0 60px;
+        padding-top: 12px;
+        height: 38px;
+        line-height: 38px;
       }
     }
 
@@ -261,6 +268,13 @@
     text-align: center;
     font-size: 13px;
     color: #cccccc;
+  }
+
+  .external-link {
+    z-index: 999;
+    a {
+      text-decoration: none;
+    }
   }
 
   // 背景

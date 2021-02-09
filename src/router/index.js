@@ -22,20 +22,13 @@ const routes = [
         path: 'welcome',
         name: 'Welcome',
         component: () => import('@/components/NestedView'),
-        meta: { group: true, title: '文档及源码' },
+        meta: { group: true, title: '二级菜单' },
         children: [
           {
-            path: 'document',
-            name: 'Document',
-            component: () => import('@/views/HelloWorld'),
-            meta: { title: '文档说明', icon: 'el-icon-reading'},
-          },
-
-          {
-            path: 'github',
-            name: 'Github',
-            component: () => import('@/views/HelloWorld'),
-            meta: { title: 'GitHub', icon: 'el-icon-position'},
+            path: 'home',
+            name: 'Home',
+            component: () => import('@/views/home'),
+            meta: { title: '系统首页', icon: 'el-icon-reading'},
           },
 
         ]

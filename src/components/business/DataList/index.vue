@@ -20,9 +20,9 @@
       </div>
     </el-header>
 
-    <el-main>
+    <el-main ref="tableContainer">
       <div style="height: 100%">
-        <SimpleTable :columns="columns" :data="tableData" :pager="page" :show-check-box="true"
+        <SimpleTable :columns="columns" :data="tableData" :pager="page" :show-check-box="true" :height="tableHeight + 'px'"
                      @handleSizeChange="handleSizeChange" @handleCurrentChange="handleCurrentChange"
                      table-size="small" table-width="100% !important">
           <el-table-column slot="table_operation" align="center" label="操作" width="150" :resizable="false" fixed="right">
@@ -87,6 +87,7 @@
         labelsModel: {},
         fieldPropsMap: {},
 
+        tableHeight: 200
       }
     },
     computed: {
@@ -101,9 +102,25 @@
       },
     },
     mounted() {
+      this.$nextTick(() => {
+        this.resizeTableHeight()
+      })
+      window.onresize = () => {
+        this.resizeTableHeight()
+      }
+
       this.initTable()
     },
     methods: {
+      resizeTableHeight() {  /* table自适应高度 */
+        //console.log("height of tableContainer: ")
+        //console.log(this.$refs.tableContainer.$el)
+        //console.log(this.$refs.tableContainer.$el.offsetHeight)
+
+        this.tableHeight = this.$refs.tableContainer.$el.offsetHeight - 42
+        console.log(this.tableHeight)
+      },
+
       initTable() {
         if (!this.entity) {
           this.$message.error('entity of prop is null')
