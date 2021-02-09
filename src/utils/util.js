@@ -1,5 +1,3 @@
-export const SERVER_URL = 'http://localhost:8080'
-//export const SERVER_URL = 'http://120.92.153.208:8080'
 
 export const generateId = function() {
   return Math.floor(Math.random() * 10000 + Math.random() * 5000);

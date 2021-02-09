@@ -1,4 +1,3 @@
-
 'use strict'
 
 const path = require('path')
@@ -8,21 +7,20 @@ function resolve (dir) {
   return path.join(__dirname, dir)
 }
 
-const name = defaultSettings.title || 'Variant Admin' // page title
+const appName = defaultSettings.title || 'Variant Admin' // page title
 
-const JarvisPlugin = require('webpack-jarvis')
+const JarvisPlugin = require('webpack-jarvis')  // webpack日志查看插件
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin')
 const smp = new SpeedMeasurePlugin({
   // outputFormat: 'humanVerbose'
   outputFormat: 'human'
 })
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin')
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CompressionPlugin = require('compression-webpack-plugin')
 
-const serverUrl = 'http://localhost:8080'
-//const serverUrl = 'http://120.92.153.208:8080'
+//const serverUrl = 'http://localhost:8080' /* 本地开发环境后端URL */
+//const serverUrl = 'http://120.92.142.115:8080' /* 线上演示版后端URL */
+const serverUrl = defaultSettings.serverUrl || 'http://localhost:8080'
 
 const IS_PROD = process.env.NODE_ENV === 'production'
 
@@ -56,12 +54,10 @@ module.exports = {
     open: true,
     proxy: {
       '/api': {
-        //target: 'http://localhost:8080',
-        //target: 'http://120.92.153.208:8080',
         target: serverUrl,
-        // ws: true,  //proxy websockets
-        secure: false, // https设置为true
-        changeOrigin: true, // 开启代理
+        // ws: true,  //是否proxy websockets
+        secure: false, //https设置为true
+        changeOrigin: true, //是否需要支持跨域处理
         pathRewrite: {
           '^/api': ''
         }
@@ -75,7 +71,7 @@ module.exports = {
         {
           // provide the app's title in webpack's name field, so that
           // it can be accessed in index.html to inject the correct title.
-          name: name,
+          name: appName,
           devtool: 'source-map', /* 用于IDEA调试Vue项目js代码 */
           // devtool: 'eval', /* 加快构建速度！！ */
           //devtool: 'cheap-source-map',
@@ -85,29 +81,25 @@ module.exports = {
             }
           },
           plugins: [
+            /* webpack日志查看插件 */
             /*
             new JarvisPlugin({
               watchOnly: false,
               port: 3001
             }),
-             */
+            */
 
-            // 为模块提供中间缓存，缓存路径是：node_modules/.cache/hard-source
-            // new HardSourceWebpackPlugin(), // 该插件跟SpeedMeasurePlugin插件冲突，不能同时使用！！
-
-            // 这个要放在所有 plugins 最后
-            // new BundleAnalyzerPlugin()
           ]
         }
     )
 
-    if (IS_PROD) {
+    if (IS_PROD) { /* 仅生产环境使用 */
       config.plugins = [
         ...config.plugins,
 
         /* 将css和js注入index.html */
         new HtmlWebpackPlugin({
-          title: 'Variant Admin',
+          title: appName,
           template: './public/index.html',
           chunks: ['app'],  /* 只注入app*.js和app*.css以及chunk-vendors*.js和chunk-vendors*.css!! */
         }),
@@ -126,11 +118,11 @@ module.exports = {
   },
 
   chainWebpack: config => {
+    /* 配置svg图标自动加载 begin */
     config.module
       .rule('svg')
       .exclude.add(resolve('src/icons'))
       .end()
-
     config.module
       .rule('icons')
       .test(/\.svg$/)
@@ -141,6 +133,7 @@ module.exports = {
       .options({
         symbolId: 'icon-[name]'
       })
+    /* 配置svg图标自动加载 end */
 
     /* CDN打包，需要修改index.html加入CDN资源 */
     config.externals({

@@ -736,9 +736,9 @@
         if (res.code === 200) {
           let fileName = res.data
           file.name = fileName
-          file.url = SYS.getPictureUrlPrefix() + '/' + fileName
+          file.url = SYS.getFileUrlPrefix() + '/' + fileName
           this.fileList.push(file) /* 只能push file对象，如果push新的对象（如下一行）上传组件会出现抖动闪烁的问题！！ */
-          //this.fileList.push({name: fileName, url: SYS.getPictureUrlPrefix() + '/' + fileName})
+          //this.fileList.push({name: fileName, url: SYS.getFileUrlPrefix() + '/' + fileName})
 
           let fileNamesStr = ''
           this.fileList.forEach(item => {

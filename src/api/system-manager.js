@@ -1,6 +1,7 @@
 import request from '@/utils/request'
-import {SERVER_URL} from "@/utils/util";
-import en from "element-ui/src/locale/lang/en";
+
+const defaultSettings = require('../settings.js')
+const SERVER_URL = defaultSettings.serverUrl
 
 export function getEntitySet() {
   return request({
@@ -267,7 +268,6 @@ export function getPictureUploadAction() {
 }
 
 export function getPictureUrlPrefix() {
-  //return process.env.VUE_APP_BASE_API + '/picture/get'
   return SERVER_URL + '/picture/get'
 }
 
@@ -276,6 +276,5 @@ export function getFileUploadAction() {
 }
 
 export function getFileUrlPrefix() {
-  //return process.env.VUE_APP_BASE_API + '/file/get'
   return SERVER_URL + '/file/get'
 }
