@@ -18,11 +18,15 @@ const smp = new SpeedMeasurePlugin({
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CompressionPlugin = require('compression-webpack-plugin')
 
-//const serverUrl = 'http://localhost:8080' /* 本地开发环境后端URL */
-//const serverUrl = 'http://120.92.142.115:8080' /* 线上演示版后端URL */
 const serverUrl = defaultSettings.serverUrl || 'http://localhost:8080'
 
 const IS_PROD = process.env.NODE_ENV === 'production'
+const mvdir = require('mvdir');
+if (IS_PROD) {
+  mvdir('index_template/index_prod.html', 'public/index.html', { copy: true });
+} else {
+  mvdir('index_template/index_dev.html', 'public/index.html', { copy: true });
+}
 
 module.exports = {
   assetsDir: './',
@@ -100,6 +104,7 @@ module.exports = {
         /* 将css和js注入index.html */
         new HtmlWebpackPlugin({
           title: appName,
+          //template: IS_PROD ? './public/index.html' : './public/index.html',
           template: './public/index.html',
           chunks: ['app'],  /* 只注入app*.js和app*.css以及chunk-vendors*.js和chunk-vendors*.css!! */
         }),
@@ -135,12 +140,14 @@ module.exports = {
       })
     /* 配置svg图标自动加载 end */
 
-    /* CDN打包，需要修改index.html加入CDN资源 */
-    config.externals({
-      'vue': 'Vue',
-      'element-ui': 'ELEMENT',
-      'quill': 'Quill',
-    })
+    if (IS_PROD) {
+      /* CDN打包，需要修改index.html加入CDN资源 */
+      config.externals({
+        'vue': 'Vue',
+        'element-ui': 'ELEMENT',
+        'quill': 'Quill',
+      })
+    }
 
   },
 

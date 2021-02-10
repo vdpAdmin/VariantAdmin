@@ -49,6 +49,7 @@
     "eslint-plugin-vue": "^6.2.2",
     "hard-source-webpack-plugin": "^0.13.1",
     "html-webpack-plugin": "^4.5.1",
+    "mvdir": "^1.0.21",
     "node-sass": "^4.9.2",
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2",

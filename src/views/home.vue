@@ -31,15 +31,14 @@
   .welcome {
     font-size: 72px;
     color: #e1e1e1;
-    text-align: center;
+    height: 100%;
+    line-height: 100%;
     .title {
-      height: 200px;
-      line-height: 200px;
-      //margin: 0 auto;
-      margin: 12px auto;
-      position: relative;
-      top: 50%;
-      transform: translateY(-50%);
+      height: 100%;
+      line-height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
 
