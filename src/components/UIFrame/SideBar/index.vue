@@ -4,34 +4,6 @@
     <el-scrollbar class="side-scrollbar">
       <el-menu :default-openeds="openedMenus" :router="true" :default-active="activeRoute"
                :collapse="isCollapse" @select="handleMenuSelect" class="main-nav-menu">
-        <!--
-        <el-submenu index="1">
-          <template slot="title"><i class="el-icon-notebook-2"></i>功能展示</template>
-          <el-menu-item index="/welcome"><i class="el-icon-sunny"></i>欢迎页</el-menu-item>
-          <el-menu-item-group>
-            <template slot="title">业务页面</template>
-            <el-menu-item index="/user-list"><i class="el-icon-user"></i>用户管理</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
-        -->
-
-        <!--
-        <el-submenu index="999">
-          <template slot="title"><i class="el-icon-setting"></i>系统管理</template>
-          <el-menu-item-group>
-            <template slot="title">元数据管理</template>
-            <el-menu-item index="/system/entity-list"><i class="el-icon-coin"></i>实体列表</el-menu-item>
-            <el-menu-item index="/system/entity-list"><i class="el-icon-connection"></i>实体关系</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group title="数据字典管理">
-            <el-menu-item index="/system/option-manager"><i class="el-icon-s-operation"></i>单选项管理</el-menu-item>
-            <el-menu-item index="/system/tag-manager"><i class="el-icon-files"></i>多选项管理</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
-        -->
-
-        <!-- TODO: 动态生成的导航菜单项必须放在静态菜单项之后，否则静态菜单项点击后不能高亮(不能自动激活is-active样式)，
-                   估计是element-ui的bug，待解决！ -->
 
         <template v-for="(item, idx) in navMenu"> <!-- 目前只考虑到3级菜单嵌套, group只考虑2级!! -->
           <el-submenu :index="item.index + ''" v-if="!item.isLeaf && !item.isGroup">
@@ -211,12 +183,10 @@ export default {
     overflow-x: hidden;
   }
 
-  ///*
   ::v-deep .svg-icon {
     width: 1.4em !important;
     height: 1.4em !important;
     margin-left: 2px !important;
     margin-right: 12px !important;
   }
-  //*/
 </style>

@@ -108,7 +108,7 @@
     </template>
 
     <template v-if="field.type === 'Reference'">
-      <el-input placeholder="请选择" v-model="fieldLabel" readonly style="width: 100%">
+      <el-input :placeholder="isReadOnly ? '' : '请选择'" v-model="fieldLabel" readonly style="width: 100%">
         <el-button slot="append" icon="el-icon-close" title="清除"
                    v-if="!!fieldLabel && !isReadOnly" @click="clearReference"></el-button>
         <el-button slot="append" icon="el-icon-search" v-if="!isReadOnly"

@@ -13,6 +13,6 @@ module.exports = {
      */
   sidebarLogo: true,
 
-  //serverUrl: 'http://localhost:8080', /* 本地开发环境后端URL */
-  serverUrl: 'http://120.92.142.115:8080' /* 线上演示版后端URL */
+  serverUrl: 'http://localhost:8080', /* 本地开发环境后端URL */
+  //serverUrl: 'http://120.92.142.115:8080' /* 线上演示版后端URL */
 }

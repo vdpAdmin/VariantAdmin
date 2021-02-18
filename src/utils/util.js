@@ -88,6 +88,8 @@ export function setColumnFormatter(columnObj) {
     columnObj.formatter = formatTagColumn
   } */else if (columnObj.type === 'Percent') {
     columnObj.formatter = formatPercentColumn
+  } else if (columnObj.type === 'Boolean') {
+    columnObj.formatter = formatBooleanColumn
   }
 }
 

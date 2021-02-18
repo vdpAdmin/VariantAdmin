@@ -41,7 +41,7 @@
 
       </el-card>
 
-      <el-dialog title="新建实体" :visible.sync="showNewEntityDialogFlag" :show-close="false"
+      <el-dialog title="新建实体" :visible.sync="showNewEntityDialogFlag" v-if="showNewEntityDialogFlag" :show-close="false"
             :close-on-click-modal="false" :close-on-press-escape="false">
         <EntityPropEditor ref="EPEditor" :entityProps="newEntityProps" :show-title="false"
                           :filter-entity-method="filterMainEntity"></EntityPropEditor>
@@ -112,6 +112,14 @@ export default {
     },
 
     createNewEntity() {
+      this.newEntityProps.name = ''
+      this.newEntityProps.label = ''
+      this.newEntityProps.entityCode = null
+      this.newEntityProps.authorizable = true
+      this.newEntityProps.assignable = false
+      this.newEntityProps.shareable = false
+      this.newEntityProps.mainEntity = ''
+      this.newEntityProps.detailEntityFlag = false
       this.showNewEntityDialogFlag = true
     },
 

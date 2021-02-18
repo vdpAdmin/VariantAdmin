@@ -23,15 +23,15 @@
       </el-table>
     </el-main>
 
-    <el-footer id="simpleTableFooter" v-if="showPager" style="height: 42px;padding-top: 6px; background: white">
+    <el-footer id="simpleTableFooter" v-if="showPagination" style="height: 42px;padding-top: 6px; background: white">
       <el-pagination
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
               style="text-align: right;margin:0;"
-              :current-page="pager.pageNo"
-              :page-size="pager.limit"
-              :page-sizes="pager.sizes"
-              :total="pager.total"
+              :current-page="pagination.pageNo"
+              :page-size="pagination.limit"
+              :page-sizes="pagination.sizes"
+              :total="pagination.total"
               layout="total, sizes, prev, pager, next, jumper">
       </el-pagination>
     </el-footer>
@@ -47,7 +47,7 @@
       tableWidth: [String, Number],
       columns: Array,
       data: Array,
-      showPager: {
+      showPagination: {
         type: Boolean,
         default: true
       },
@@ -55,7 +55,7 @@
         type: Boolean,
         default: false
       },
-      pager: Object,
+      pagination: Object,
       height: {
         type: String,
         default: "100%"

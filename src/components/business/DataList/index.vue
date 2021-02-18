@@ -3,8 +3,8 @@
     <el-header class="list-search-panel">
       <div class="search-panel-left">
         <el-button type="primary" size="small" icon="el-icon-plus" @click="addNewRecord">新建{{entityLabel}}</el-button>
-        <el-button type="danger" size="small" icon="el-icon-delete">删除</el-button>
         <!--
+        <el-button type="danger" size="small" icon="el-icon-delete">删除</el-button>
         <el-button size="small">修改登录密码</el-button>
         -->
       </div>
@@ -22,7 +22,7 @@
 
     <el-main ref="tableContainer">
       <div style="height: 100%">
-        <SimpleTable :columns="columns" :data="tableData" :pager="page" :show-check-box="true" :height="tableHeight + 'px'"
+        <SimpleTable :columns="columns" :data="tableData" :pagination="page" :show-check-box="true" :height="tableHeight + 'px'"
                      @handleSizeChange="handleSizeChange" @handleCurrentChange="handleCurrentChange"
                      table-size="small" table-width="100% !important">
           <el-table-column slot="table_operation" align="center" label="操作" width="150" :resizable="false" fixed="right">
@@ -62,6 +62,41 @@
     components: { FormWidget },
     props: {
       entity: String,
+      customAddAction: {
+        type: Boolean,
+        default: false
+      },
+      customEditAction: {
+        type: Boolean,
+        default: false
+      },
+      customDeleteAction: {
+        type: Boolean,
+        default: false
+      },
+      customDataLoad: {
+        type: Boolean,
+        default: false
+      },
+      customPagination: {
+        type: Boolean,
+        default: false
+      },
+      page: {
+        type: Object,
+        default: () => {
+          return {
+            pageNo: 1,
+            limit: 20,
+            sizes: [10, 20, 30, 50, 100],
+            total: 0
+          }
+        }
+      },
+      customSearch: {
+        type: Boolean,
+        default: false
+      },
     },
     data() {
       return {
@@ -73,12 +108,12 @@
 
         columns: [],
         tableData: [],
-        page: {
-          pageNo: 1,
-          limit: 20,
-          sizes: [10, 20, 30, 50, 100],
-          total: 0
-        },
+        // page: {
+        //   pageNo: 1,
+        //   limit: 20,
+        //   sizes: [10, 20, 30, 50, 100],
+        //   total: 0
+        // },
 
         showFormDialogFlag: false,
         layout: {},
@@ -113,17 +148,17 @@
     },
     methods: {
       resizeTableHeight() {  /* table自适应高度 */
-        //console.log("height of tableContainer: ")
-        //console.log(this.$refs.tableContainer.$el)
-        //console.log(this.$refs.tableContainer.$el.offsetHeight)
-
         this.tableHeight = this.$refs.tableContainer.$el.offsetHeight - 42
-        console.log(this.tableHeight)
+        //console.log(this.tableHeight)
       },
 
       initTable() {
         if (!this.entity) {
           this.$message.error('entity of prop is null')
+          return
+        }
+
+        if (this.customDataLoad === true) {
           return
         }
 
@@ -133,11 +168,12 @@
             return
           }
 
-          this.columns = res.data.columnList
-          this.columns.forEach(col => {
-            setColumnFormatter(col)
-          })
-          this.tableData = res.data.dataList
+          // this.columns = res.data.columnList
+          // this.columns.forEach(col => {
+          //   setColumnFormatter(col)
+          // })
+          // this.tableData = res.data.dataList
+          this.loadTableData(res.data.columnList, res.data.dataList)
           this.page.total = res.data.pagination.total
           this.entityLabel = res.data.entityBasicInfo.label
           this.idFieldName = res.data.entityBasicInfo.idField
@@ -146,31 +182,69 @@
         })
       },
 
-      loadTableData(filter, pageSize, pageNo) {
+      /*  */
+      loadTableData(columnList, recordList) {
+        this.columns = columnList
+        this.columns.forEach(col => {
+          setColumnFormatter(col)
+        })
+        this.tableData = recordList
+      },
+
+      getTableData(filter, pageSize, pageNo) {
         //TODO
       },
 
       // 改变分页大小处理
       handleSizeChange(val) {
+        if (this.customAddAction === true) {
+          this.$emit('handleSizeChange', val)  //父组件发出消息，由父组件处理
+          return
+        }
+
         this.page.limit = val
-        this.loadTableData(this.searchFilter, this.page.limit, 1)
+        this.getTableData(this.searchFilter, this.page.limit, 1)
       },
 
       // 翻页处理
       handleCurrentChange(val) {
+        if (this.customAddAction === true) {
+          this.$emit('handleCurrentChange', val)  //父组件发出消息，由父组件处理
+          return
+        }
+
         this.page.pageNo = val
-        this.loadTableData(this.searchFilter, this.page.limit, this.page.pageNo)
+        this.getTableData(this.searchFilter, this.page.limit, this.page.pageNo)
       },
 
       searchData() {
+        //console.log('search data')
+        if (this.customSearch === true) {
+          console.log('search data')
+          this.$emit('searchData', this.keyword)  //父组件发出消息，由父组件处理
+          return
+        }
+
         //TODO
       },
 
       clearSearch() {
+        if (this.customSearch === true) {
+          this.keyword = ''
+          this.$emit('clearSearch')  //父组件发出消息，由父组件处理
+          return
+        }
+
         //TODO
       },
 
       addNewRecord() {
+        if (this.customAddAction === true) {
+          this.$emit('addTableRecord')  //父组件发出消息，由父组件处理
+          //console.log('emit addTableRecord event！')
+          return
+        }
+
         formCreateQuery(this.entity).then(res => {
           if (res.error != null) {
             this.$message({ message: res.error, type: 'error' })
@@ -186,7 +260,7 @@
             this.labelsModel = res.data.labelData
             this.fieldPropsMap = res.data.fieldPropsMap
             this.formState = FormState.NEW
-            console.log('set formState: ' + this.formState)
+            //console.log('set formState: ' + this.formState)
             this.showFormDialogFlag = true;
             if (!!this.$refs['formWidget']) {
               this.$refs['formWidget'].clearFormValidate()
@@ -220,6 +294,11 @@
       },
 
       editTableData(row) {
+        if (this.customEditAction === true) {
+          this.$emit('editTableRow', row)  //向父组件发出消息，由父组件处理
+          return
+        }
+
         this.curRecordId  = row[this.idFieldName]
         formUpdateQuery(this.entity, this.curRecordId).then(res => {
           if (res.error != null) {
@@ -235,7 +314,7 @@
             this.labelsModel = res.data.labelData
             this.fieldPropsMap = res.data.fieldPropsMap
             this.formState = FormState.EDIT //编辑记录状态
-            console.log('set formState: ' + this.formState)
+            //console.log('set formState: ' + this.formState)
             this.showFormDialogFlag = true;
             if (!!this.$refs['formWidget']) {
               this.$refs['formWidget'].clearFormValidate()
@@ -277,6 +356,11 @@
       },
 
       deleteTableData(row) {
+        if (this.customDeleteAction === true) {
+          this.$emit('deleteTableRow', row)  //向父组件发出消息，由父组件处理
+          return
+        }
+
         //TODO
       },
 

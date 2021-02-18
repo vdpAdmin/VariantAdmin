@@ -218,7 +218,7 @@
         width: 56px;
         height: 36px;
         position: absolute;
-        top: 13px;
+        top: 11px;
         left: 106px;
       }
 

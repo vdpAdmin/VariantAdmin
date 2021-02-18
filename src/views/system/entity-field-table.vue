@@ -92,7 +92,7 @@
 
       <el-main>
         <div style="height: 100%">
-          <SimpleTable :columns="columns" :data="filteredData" :show-pager="false" :show-check-box="false"
+          <SimpleTable :columns="columns" :data="filteredData" :show-pagination="false" :show-check-box="false"
                        table-size="small" table-width="100% !important">
             <el-table-column slot="table_operation" align="center" label="操作" width="130" :resizable="false" fixed="right">
               <template slot-scope="scope" v-if="!!!scope.row['reserved']">
@@ -112,7 +112,7 @@
       <el-dialog title="修改名称字段" :visible.sync="showNameFieldDialogFlag" v-if="showNameFieldDialogFlag"
                  :append-to-body="true" :destroy-on-close="true" class="name-field-dialog" width="460px">
         <div class="name-field-hint"><i class="el-icon-bell"></i>提示：只有文本(Text)类型字段可设置为名称字段。</div>
-        <SimpleTable :show-pager="false" :show-check-box="false" :table-size="'mini'"
+        <SimpleTable :show-pagination="false" :show-check-box="false" :table-size="'mini'"
                      :columns="nameFieldColumns" :data="nameFieldData" :max-height="420">
           <el-table-column slot="table_operation" align="center" label="" width="150" :resizable="false">
             <template slot-scope="scope">

@@ -107,7 +107,7 @@
 
     <el-dialog ref="entityListDlg" title="选择引用实体" :visible.sync="showEntityListDialogFlag" v-if="showEntityListDialogFlag"
                :append-to-body="true" :destroy-on-close="true" class="entity-list-dialog" width="560px">
-      <SimpleTable :show-pager="false" :show-check-box="false" :table-size="'mini'" :columns="columns" :data="tableData"
+      <SimpleTable :show-pagination="false" :show-check-box="false" :table-size="'mini'" :columns="columns" :data="tableData"
                    :max-height="420">
         <el-table-column slot="table_operation" align="center" label="" width="150" :resizable="false">
           <template slot-scope="scope">

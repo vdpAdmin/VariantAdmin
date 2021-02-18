@@ -70,32 +70,83 @@ module.exports = {
     public: '127.0.0.1:8088'
   },
 
-  configureWebpack: (config) => {
-    smp.wrap(
-        {
-          // provide the app's title in webpack's name field, so that
-          // it can be accessed in index.html to inject the correct title.
-          name: appName,
-          devtool: 'source-map', /* 用于IDEA调试Vue项目js代码 */
-          // devtool: 'eval', /* 加快构建速度！！ */
-          //devtool: 'cheap-source-map',
-          resolve: {
-            alias: {
-              '@': resolve('src')
-            }
-          },
-          plugins: [
-            /* webpack日志查看插件 */
-            /*
-            new JarvisPlugin({
-              watchOnly: false,
-              port: 3001
-            }),
-            */
+  // configureWebpack: {
+  //   name: appName,
+  //   devtool: 'source-map', /* 用于IDEA调试Vue项目js代码 */
+  //   //devtool: 'eval', /* 加快构建速度！！ */
+  //   //devtool: 'cheap-source-map',
+  //   resolve: {
+  //     alias: {
+  //       '@': resolve('src')
+  //     }
+  //   },
+  // },
 
-          ]
-        }
-    )
+  // configureWebpack: (config) => {
+  //   smp.wrap(
+  //       {
+  //         // provide the app's title in webpack's name field, so that
+  //         // it can be accessed in index.html to inject the correct title.
+  //         name: appName,
+  //         devtool: 'source-map', /* 用于IDEA调试Vue项目js代码 */
+  //         //devtool: 'eval', /* 加快构建速度！！ */
+  //         //devtool: 'cheap-source-map',
+  //         resolve: {
+  //           alias: {
+  //             '@': resolve('src')
+  //           }
+  //         },
+  //         plugins: [
+  //           /* webpack日志查看插件 */
+  //           /*
+  //           new JarvisPlugin({
+  //             watchOnly: false,
+  //             port: 3001
+  //           }),
+  //           */
+  //
+  //         ]
+  //       }
+  //   )
+  //
+  //   config.name = appName
+  //   config.devtool = 'source-map' /* 用于IDEA调试Vue项目js代码 */
+  //   config.resolve = {
+  //     alias: {
+  //       '@': resolve('src')
+  //     }
+  //   }
+  //
+  //   if (IS_PROD) { /* 仅生产环境使用 */
+  //     config.plugins = [
+  //       ...config.plugins,
+  //
+  //       /* 将css和js注入index.html */
+  //       new HtmlWebpackPlugin({
+  //         title: appName,
+  //         //template: IS_PROD ? './public/index.html' : './public/index.html',
+  //         template: './public/index.html',
+  //         chunks: ['app'],  /* 只注入app*.js和app*.css以及chunk-vendors*.js和chunk-vendors*.css!! */
+  //       }),
+  //
+  //       /* gzip压缩js、css文件 */
+  //       /* 注意：如果build出现Cannot read property ‘tapPromise‘ of undefined错误，需要安装低版本插件，解决方法如下：
+  //         1.先卸载插件：npm uninstall compression-webpack-plugin
+  //         2.安装指定版本插件：npm i -D compression-webpack-plugin@5.0.1
+  //        */
+  //       new CompressionPlugin({
+  //         test: /\.js$|\.css$/,
+  //         deleteOriginalAssets: false // 是否删除原文件
+  //       })
+  //     ]
+  //   }
+  // },
+
+  configureWebpack: (config) => {
+    config.name = appName
+    //config.devtool = 'source-map' /* 用于IDEA调试Vue项目js代码 */
+    config.devtool = 'eval' /* 加快开发环境构建速度 */
+    config.resolve.alias['@'] = resolve('src')
 
     if (IS_PROD) { /* 仅生产环境使用 */
       config.plugins = [
@@ -119,10 +170,48 @@ module.exports = {
           deleteOriginalAssets: false // 是否删除原文件
         })
       ]
+
+      /* CDN打包，需要修改index.html加入CDN资源 */
+      config.externals = {
+        'vue': 'Vue',
+        'element-ui': 'ELEMENT',
+        'quill': 'Quill',
+      }
     }
   },
 
   chainWebpack: config => {
+    // if (IS_PROD) { /* 仅生产环境使用 */
+    //   config.plugins = [
+    //     ...config.plugins,
+    //
+    //     /* 将css和js注入index.html */
+    //     new HtmlWebpackPlugin({
+    //       title: appName,
+    //       //template: IS_PROD ? './public/index.html' : './public/index.html',
+    //       template: './public/index.html',
+    //       chunks: ['app'],  /* 只注入app*.js和app*.css以及chunk-vendors*.js和chunk-vendors*.css!! */
+    //     }),
+    //
+    //     /* gzip压缩js、css文件 */
+    //     /* 注意：如果build出现Cannot read property ‘tapPromise‘ of undefined错误，需要安装低版本插件，解决方法如下：
+    //       1.先卸载插件：npm uninstall compression-webpack-plugin
+    //       2.安装指定版本插件：npm i -D compression-webpack-plugin@5.0.1
+    //      */
+    //     new CompressionPlugin({
+    //       test: /\.js$|\.css$/,
+    //       deleteOriginalAssets: false // 是否删除原文件
+    //     })
+    //   ]
+    //
+    //   /* CDN打包，需要修改index.html加入CDN资源 */
+    //   config.externals({
+    //     'vue': 'Vue',
+    //     'element-ui': 'ELEMENT',
+    //     'quill': 'Quill',
+    //   })
+    // }
+
     /* 配置svg图标自动加载 begin */
     config.module
       .rule('svg')
@@ -140,14 +229,14 @@ module.exports = {
       })
     /* 配置svg图标自动加载 end */
 
-    if (IS_PROD) {
-      /* CDN打包，需要修改index.html加入CDN资源 */
-      config.externals({
-        'vue': 'Vue',
-        'element-ui': 'ELEMENT',
-        'quill': 'Quill',
-      })
-    }
+    // if (IS_PROD) {
+    //   /* CDN打包，需要修改index.html加入CDN资源 */
+    //   config.externals({
+    //     'vue': 'Vue',
+    //     'element-ui': 'ELEMENT',
+    //     'quill': 'Quill',
+    //   })
+    // }
 
   },
 

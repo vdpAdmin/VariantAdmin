@@ -42,7 +42,7 @@ router.beforeEach(async (to, from, next) => {
       next()
     } else {
       // other pages that do not have permission to access are redirected to the login page.
-      console.log( to.path )
+      //console.log( to.path )
       if (!!to.path && (to.path !== '/')) {
         next(`/login?redirect=${to.path}`)
       } else {

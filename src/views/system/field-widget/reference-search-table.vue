@@ -8,7 +8,7 @@
       </div>
     </el-header>
     <el-main>
-      <SimpleTable :columns="columns" :data="tableData" :pager="page" :show-check-box="false"
+      <SimpleTable :columns="columns" :data="tableData" :pagination="page" :show-check-box="false" :height="tableHeight"
                    @handleSizeChange="handleSizeChange" @handleCurrentChange="handleCurrentChange"
                    table-size="small" table-width="100% !important">
         <el-table-column slot="table_operation" align="center" label="操作" width="100" :resizable="true" fixed="right">
@@ -29,6 +29,10 @@
     props: {
       entity: String,
       refField: String,
+      tableHeight: {
+        type: String,
+        default: '480px'
+      }
     },
     name: "ReferenceSearchTable",
     data() {

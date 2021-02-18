@@ -47,7 +47,7 @@
 
     <el-dialog ref="selectMainEntityDlg" title="选择主实体" :visible.sync="showMainEntityDialogFlag" :append-to-body="true"
                custom-class="no-padding" width="560px">
-      <SimpleTable :show-pager="false" :show-check-box="false" :table-size="'mini'" :columns="columns" :data="tableData"
+      <SimpleTable :show-pagination="false" :show-check-box="false" :table-size="'mini'" :columns="columns" :data="tableData"
           :max-height="420">
         <el-table-column slot="table_operation" align="center" label="" width="150" :resizable="false">
           <template slot-scope="scope">

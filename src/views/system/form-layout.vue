@@ -185,10 +185,11 @@ export default {
         createFormLayout(this.entity, this.layout.getSavableLayout()).then(res => {
           if (res.error != null) {
             this.$message({message: res.error, type: 'error'})
-            //return
-          } else {
-            this.$message.success('保存成功')
+            return
           }
+
+          this.layoutId = res.data
+          this.$message.success('保存成功')
         }).catch(res => {
           this.$message({message: res.message, type: 'error'})
         })
@@ -484,7 +485,7 @@ export default {
       this.showNewFieldDialogFlag = true
     },
 
-    previewForm() {
+    previewLayoutForm() {
       console.log( this.fieldPropsMap )
       previewLayout(this.entity).then(res => {
         if (res.error != null) {

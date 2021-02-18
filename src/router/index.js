@@ -50,21 +50,6 @@ const routes = [
         ]
       },
 
-      {
-        path: 'user-manager',
-        name: 'UserManager',
-        component: () => import('@/components/NestedView'),
-        meta: { group: true, title: '组织架构' },
-        children: [
-          {
-            path: 'user-list',
-            name: 'UserList',
-            component: () => import('@/views/user/user-tree-table'),
-            meta: { title: '用户管理', icon: 'el-icon-user'}
-          },
-        ]
-      },
-
     ]
   },
 
@@ -131,6 +116,28 @@ const routes = [
             hidden: true, /* 尚未实现，暂时隐藏 */
             component: () => import('@/views/system/entity-list'),
             meta: { title: '实体关系', icon: 'el-icon-connection' }
+          },
+        ]
+      },
+
+      {
+        path: 'user-manager',
+        name: 'UserManager',
+        component: () => import('@/components/NestedView'),
+        meta: { group: true, title: '组织架构' },
+        children: [
+          {
+            path: 'user-list',
+            name: 'UserList',
+            component: () => import('@/views/user/user-tree-table'),
+            meta: { title: '用户管理', icon: 'el-icon-user'}
+          },
+
+          {
+            path: 'role-list',
+            name: 'RoleList',
+            component: () => import('@/views/user/role-list-view'),
+            meta: { title: '权限角色', icon: 'el-icon-key'}
           },
         ]
       },

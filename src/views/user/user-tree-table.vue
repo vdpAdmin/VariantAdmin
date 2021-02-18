@@ -16,7 +16,9 @@
       <el-header class="list-search-panel">
         <div class="search-panel-left">
           <el-button type="primary" size="small" icon="el-icon-plus" @click="addUser">新建用户</el-button>
+          <!--
           <el-button type="danger" size="small" icon="el-icon-delete">删除</el-button>
+          -->
           <el-button size="small">修改登录密码</el-button>
         </div>
         <div class="search-panel-right">
@@ -29,7 +31,7 @@
 
       <el-main ref="tableContainer">
         <div style="height: 100%">
-          <SimpleTable :columns="columns" :data="tableData" :pager="page" :show-check-box="true" :height="tableHeight + 'px'"
+          <SimpleTable :columns="columns" :data="tableData" :pagination="page" :show-check-box="true" :height="tableHeight + 'px'"
                        @handleSizeChange="handleSizeChange" @handleCurrentChange="handleCurrentChange"
                        table-size="small" table-width="100% !important">
             <el-table-column slot="table_operation" align="center" label="操作" width="150" :resizable="false">
@@ -110,7 +112,7 @@
         tableData: [],
         page: {
           pageNo: 1,
-          limit: 10,
+          limit: 20,
           sizes: [10, 20, 30, 50, 100],
           total: 0
         },

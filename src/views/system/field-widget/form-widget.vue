@@ -1,7 +1,7 @@
 <template>
   <el-form size="mini" ref="dataForm" :label-position="layout.labelPosition" :model="formModel" :rules="rules"
            :validate-on-rule-change="false">
-    <el-tabs type="card" ref="formTabs" :value="layout.activeTabName">
+    <el-tabs type="card" ref="formTabs" :value="layout.activeTabName" :class="{'hide-tab-header': hideTabHeader}">
       <el-tab-pane v-for="tabItem in layout.formTabs" :key="tabItem.id" :name="tabItem.name" :label="tabItem.title">
         <layout-section accordion v-for="sectionItem in tabItem.sections" :key="sectionItem.id" :value="['001']">
           <layout-section-item :title="sectionItem.title" :disabled="false" name="001"
@@ -101,6 +101,11 @@
 
       isPreview() {
         return this.formState === FormState.PREVIEW
+      },
+
+      hideTabHeader() {
+        return (!!this.layout && !!this.layout.formTabs && (this.layout.formTabs.length === 1) &&
+            (this.layout.hideOnlyTabTitle === true))
       }
     },
 
@@ -208,6 +213,10 @@
   }
   ::v-deep .el-tabs__header {
     margin-bottom: 0;
+  }
+
+  .hide-tab-header ::v-deep .el-tabs__header {
+    display: none;
   }
 
   ::v-deep .el-tabs__item {
