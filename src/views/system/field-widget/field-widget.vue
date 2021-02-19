@@ -216,7 +216,7 @@
       }
     },
     mounted() {
-      console.log(this.formState)
+      //console.log(this.formState)
 
       if (((this.field.type === 'Picture') || (this.field.type === 'File')) &&
           ((this.formState === FormState.EDIT) || (this.formState === FormState.VIEW))) {  //初始化图片、文件组件
@@ -268,7 +268,7 @@
           }
         },
         set(newValue) {
-          console.log('setValue: ' + this.field.name + ', ' + newValue)
+          //console.log('setValue: ' + this.field.name + ', ' + newValue)
           if (this.formState !== 0) { /* 预览状态下formModel为null，下一行会报错！！ */
 
             if (this.field.type === 'Boolean') {
@@ -629,7 +629,7 @@
           })
 
           //this.fileList = [...new Set(fileArray)]  //去重
-          console.log(this.fileList)
+          //console.log(this.fileList)
           this.uploadBtnHidden = this.fileList.length >= this.maxFileCount
         }
       },

@@ -12,9 +12,19 @@
         <el-form-item label="实体编码">
           <el-input v-model="entityProps.entityCode" readonly disabled></el-input>
         </el-form-item>
-        <el-form-item label="是否开启数据权限">
+        <el-form-item label="是否允许设计表单">
+          <el-switch style="display: block; float: right" v-model="entityProps.layoutable"
+                     active-text="是" inactive-text="否">
+          </el-switch>
+        </el-form-item>
+        <el-form-item label="是否允许设计列表">
+          <el-switch style="display: block; float: right" v-model="entityProps.listable"
+                     active-text="是" inactive-text="否">
+          </el-switch>
+        </el-form-item>
+        <el-form-item label="是否开启记录级权限">
           <el-switch style="display: block; float: right" v-model="entityProps.authorizable"
-                  active-text="开启" inactive-text="禁用" @change="changeAuthorization">
+                  active-text="是" inactive-text="否" @change="changeAuthorization">
           </el-switch>
         </el-form-item>
         <!--

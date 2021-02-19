@@ -64,8 +64,8 @@
             </template>
           </FormWidget>
           <div slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="saveFormData" style="width: 120px">保 存</el-button>
-            <el-button @click="showFormDialogFlag = false">取 消</el-button>
+            <el-button type="primary" @click="saveFormData" size="small" style="width: 90px">保 存</el-button>
+            <el-button @click="showFormDialogFlag = false" size="small">取 消</el-button>
           </div>
         </el-dialog>
       </el-main>

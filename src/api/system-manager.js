@@ -51,6 +51,22 @@ export function updateEntityLabel(entity, entityLabel) {
   })
 }
 
+export function entityCanBeDeleted(entity) {
+  return request({
+    url: 'systemManager/entityCanBeDeleted',
+    method: 'get',
+    params: {entity},
+  })
+}
+
+export function deleteEntity(entity) {
+  return request({
+    url: 'systemManager/deleteEntity',
+    method: 'post',
+    params: {entity},
+  })
+}
+
 export function getTextFieldList(entity) {
   return request({
     url: 'systemManager/getTextFieldListOfEntity',

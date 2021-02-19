@@ -41,8 +41,8 @@
         <FormWidget :entity="entity" :layout="layout" :form-model="formModel" :field-props-map="fieldPropsMap"
                     :labels-model="labelsModel" :form-state="formState" ref="formWidget"></FormWidget>
         <div slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="saveFormData" style="width: 120px">保 存</el-button>
-          <el-button @click="showFormDialogFlag = false">取 消</el-button>
+          <el-button type="primary" @click="saveFormData" size="small" style="width: 90px">保 存</el-button>
+          <el-button @click="showFormDialogFlag = false" size="small">取 消</el-button>
         </div>
       </el-dialog>
     </el-main>
@@ -78,10 +78,10 @@
         type: Boolean,
         default: false
       },
-      customPagination: {
-        type: Boolean,
-        default: false
-      },
+      // customPagination: {
+      //   type: Boolean,
+      //   default: false
+      // },
       page: {
         type: Object,
         default: () => {
@@ -93,10 +93,10 @@
           }
         }
       },
-      customSearch: {
-        type: Boolean,
-        default: false
-      },
+      // customSearch: {
+      //   type: Boolean,
+      //   default: false
+      // },
     },
     data() {
       return {
@@ -168,11 +168,6 @@
             return
           }
 
-          // this.columns = res.data.columnList
-          // this.columns.forEach(col => {
-          //   setColumnFormatter(col)
-          // })
-          // this.tableData = res.data.dataList
           this.loadTableData(res.data.columnList, res.data.dataList)
           this.page.total = res.data.pagination.total
           this.entityLabel = res.data.entityBasicInfo.label
@@ -192,12 +187,13 @@
       },
 
       getTableData(filter, pageSize, pageNo) {
-        //TODO
+        //TODO!!!
+        //TODO!!!
       },
 
       // 改变分页大小处理
       handleSizeChange(val) {
-        if (this.customAddAction === true) {
+        if (this.customDataLoad === true) {
           this.$emit('handleSizeChange', val)  //父组件发出消息，由父组件处理
           return
         }
@@ -208,7 +204,7 @@
 
       // 翻页处理
       handleCurrentChange(val) {
-        if (this.customAddAction === true) {
+        if (this.customDataLoad === true) {
           this.$emit('handleCurrentChange', val)  //父组件发出消息，由父组件处理
           return
         }
@@ -218,9 +214,7 @@
       },
 
       searchData() {
-        //console.log('search data')
-        if (this.customSearch === true) {
-          console.log('search data')
+        if (this.customDataLoad === true) {
           this.$emit('searchData', this.keyword)  //父组件发出消息，由父组件处理
           return
         }
@@ -229,7 +223,7 @@
       },
 
       clearSearch() {
-        if (this.customSearch === true) {
+        if (this.customDataLoad === true) {
           this.keyword = ''
           this.$emit('clearSearch')  //父组件发出消息，由父组件处理
           return
@@ -241,7 +235,6 @@
       addNewRecord() {
         if (this.customAddAction === true) {
           this.$emit('addTableRecord')  //父组件发出消息，由父组件处理
-          //console.log('emit addTableRecord event！')
           return
         }
 

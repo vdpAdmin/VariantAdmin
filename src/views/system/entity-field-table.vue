@@ -5,7 +5,7 @@
       <div class="entity-property">
         <div class="entity-property-header">&lt;{{entityProps.label}}&gt;实体属性</div>
         <div class="entity-property-form">
-          <el-form label-position="left" :label-width="'110px'" size="mini">
+          <el-form label-position="left" :label-width="'120px'" size="mini">
             <el-form-item label="实体名称：">
               <el-input type="text" v-model="entityProps.name" disabled></el-input>
             </el-form-item>
@@ -25,14 +25,20 @@
                 <i class="el-icon-edit primary-color" slot="suffix" title="修改名称字段" @click="modifyEntityNameField"></i>
               </el-input>
             </el-form-item>
+            <el-form-item label="允许设计表单：">
+              <el-switch v-model="entityProps.layoutable" style="float: right" disabled></el-switch>
+            </el-form-item>
+            <el-form-item label="允许设计列表：">
+              <el-switch v-model="entityProps.listable" style="float: right" disabled></el-switch>
+            </el-form-item>
+            <el-form-item label="开启记录级权限：">
+              <el-switch v-model="entityProps.authorizable" style="float: right" disabled></el-switch>
+            </el-form-item>
             <el-form-item label="是否从属实体：">
               <el-switch v-model="entityProps.detailEntityFlag" style="float: right" disabled></el-switch>
             </el-form-item>
             <el-form-item label="所属主实体：" v-if="!!entityProps.detailEntityFlag">
               <el-input type="text" v-model="entityProps.mainEntity" disabled></el-input>
-            </el-form-item>
-            <el-form-item label="开启数据权限：">
-              <el-switch v-model="entityProps.authorizable" style="float: right" disabled></el-switch>
             </el-form-item>
           </el-form>
         </div>
@@ -90,10 +96,10 @@
         </div>
       </el-header>
 
-      <el-main>
+      <el-main ref="tableContainer">
         <div style="height: 100%">
           <SimpleTable :columns="columns" :data="filteredData" :show-pagination="false" :show-check-box="false"
-                       table-size="small" table-width="100% !important">
+                       :height="tableHeight + 'px'" table-size="small" table-width="100% !important">
             <el-table-column slot="table_operation" align="center" label="操作" width="130" :resizable="false" fixed="right">
               <template slot-scope="scope" v-if="!!!scope.row['reserved']">
                 <el-button type="text" size="mini" icon="el-icon-edit" @click="editTableData(scope.row)">修改</el-button>
@@ -144,8 +150,8 @@
         <EntityPropEditor ref="EPEditor" :entityProps="entityProps" :show-title="false"
                           :filter-entity-method="filterMainEntity"></EntityPropEditor>
         <div slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="saveEntity">保 存</el-button>
-          <el-button @click="cancelSaveEntity">取 消</el-button>
+          <el-button type="primary" @click="saveEntity" size="small">保 存</el-button>
+          <el-button @click="cancelSaveEntity" size="small">取 消</el-button>
         </div>
       </el-dialog>
     </el-container>
@@ -213,6 +219,7 @@
         tableData: [],
         filteredData: [],
         searchText: '',
+        tableHeight: 100,
 
         curFWEditor: '',
         curEditorType: '',
@@ -236,6 +243,8 @@
           nameField: '',
           detailEntityFlag: false,
           mainEntity: '',
+          layoutable: true,
+          listable: true,
           authorizable: false,
           assignable: false,
           shareable: false,
@@ -243,9 +252,20 @@
       }
     },
     mounted() {
+      this.$nextTick(() => {
+        this.resizeTableHeight()
+      })
+      window.onresize = () => {
+        this.resizeTableHeight()
+      }
+
       this.initPageData()
     },
     methods: {
+      resizeTableHeight() {  /* table自适应高度 */
+        this.tableHeight = this.$refs.tableContainer.$el.offsetHeight - 42 + 42/*覆盖表格页脚高度*/
+      },
+
       initEntityProps() {
         getEntityProps(this.entity).then(res => {
           if (res.error != null) {
@@ -314,7 +334,7 @@
             confirmText.forEach(ct => {
               pTags.push(h('p', null, ct))
             })
-            this.$confirm('系统提示', {
+            this.$confirm('删除提醒', {
               message: h('div', null, pTags),
               showCancelButton: true,
               type: 'warning'
