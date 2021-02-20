@@ -78,10 +78,6 @@
         type: Boolean,
         default: false
       },
-      // customPagination: {
-      //   type: Boolean,
-      //   default: false
-      // },
       page: {
         type: Object,
         default: () => {
@@ -93,10 +89,6 @@
           }
         }
       },
-      // customSearch: {
-      //   type: Boolean,
-      //   default: false
-      // },
     },
     data() {
       return {
