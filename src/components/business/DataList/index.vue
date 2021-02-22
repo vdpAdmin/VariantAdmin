@@ -384,17 +384,6 @@
     position: relative;
     height: 62px;
 
-    //.el-input.v-middle { /* 借鉴.el-button样式，解决IE垂直居中问题 */
-    //  display: inline-table;
-    //  padding: 15px 20px 0 0;
-    //}
-
-
-    //div.relative-wrapper {
-    //  height: 62px;
-    //  position: relative;
-    //}
-
     ::v-deep .el-input.v-middle {
       position: absolute;
       top: 50%;

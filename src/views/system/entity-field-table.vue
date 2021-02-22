@@ -555,10 +555,17 @@
     float: right;
     width: 360px;
 
-    .el-input.v-middle { /* 借鉴.el-button样式，解决IE垂直居中问题。TODO: 但文本框的清除小按钮没有了，待解决！ */
-      display: inline-table;
-      padding: 15px 20px 0 0;
+    /* 解决IE浮动元素垂直居中问题 begin */
+    position: relative;
+    height: 62px;
+
+    ::v-deep .el-input.v-middle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
+    /* end */
   }
 
   ::v-deep .el-table th.gutter { /* 解决表头与内容列不对齐差1个像素的问题！！ */

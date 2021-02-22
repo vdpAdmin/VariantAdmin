@@ -77,7 +77,7 @@
   import Vue from "vue"
   import {formatRefColumn, formatRefListColumn, formatOptionColumn,
     isEmptyStr, arrayContain} from '@/utils/util'
-  import { getDepartmentTree } from '@/api/user'
+  import {deleteRoleById, deleteUserById, getDepartmentTree} from '@/api/user'
   import { getDataList } from '@/api/crud'
   import { getFormLayout } from '@/api/system-manager'
   import { formCreateQuery, formUpdateQuery, saveRecord } from '@/api/crud'
@@ -225,7 +225,26 @@
       },
 
       deleteTableData(row) {
-        //TODO
+        if (row.userId === '021-000000000000000000000000000000000001') {
+          this.$message.info('管理员用户禁止删除！')
+          return
+        }
+
+        this.$confirm('是否删除该用户?', '删除确认').then(() => {
+          deleteUserById(row.userId).then(res => {
+            if (res.error != null) {
+              this.$message({ message: res.error, type: 'error' })
+              return
+            }
+
+            this.$message.success('删除成功')
+            this.loadTableData('(1=1)', this.page.limit, 1)
+          }).catch(res => {
+            this.$message({ message: res.message, type: 'error' })
+          })
+        }).catch(() => {
+          this.$message.info('取消删除')
+        })
       },
 
       loadTableData(filter, pageSize, pageNo) {
@@ -295,8 +314,6 @@
       },
 
       saveFormData() {
-        //console.log(this.formModel)
-
         let validResult = false
         this.$refs['formWidget'].validateForm( (valid) => {
           validResult = valid
@@ -318,6 +335,7 @@
             this.labelsModel = res.data.labelData
             this.$message({ message: '保存成功', type: 'success' })
             this.showFormDialogFlag = false
+            this.loadTableData('(1=1)', this.page.limit, 1)
           }
         }).catch(res => {
           this.$message({ message: res.message, type: 'error' })
@@ -394,10 +412,17 @@
     float: right;
     width: 360px;
 
-    .el-input.v-middle { /* 借鉴.el-button样式，解决IE垂直居中问题 */
-      display: inline-table;
-      padding: 15px 20px 0 0;
+    /* 解决IE浮动元素垂直居中问题 begin */
+    position: relative;
+    height: 62px;
+
+    ::v-deep .el-input.v-middle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
+    /* end */
   }
 
   ::v-deep .el-table th.gutter { /* 解决表头与内容列不对齐差1个像素的问题！！ */

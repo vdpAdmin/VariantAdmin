@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function login(data) {
   return request({
-    url: 'login',
+    url: 'user/login',
     method: 'post',
     data
   })
@@ -10,8 +10,16 @@ export function login(data) {
 
 export function logout() {
   return request({
-    url: 'logout',
+    url: 'user/logout',
     method: 'post',
+  })
+}
+
+export function deleteUserById(userId) {
+  return request({
+    url: 'user/deleteUser',
+    method: 'post',
+    params: { userId }
   })
 }
 
@@ -29,11 +37,28 @@ export function getBlankRoleData() {
   })
 }
 
+export function getRoleData(roleId) {
+  return request({
+    url: 'role/getRoleData',
+    method: 'get',
+    params: { roleId }
+  })
+}
+
+
 export function saveRoleData(roleDTO) {
   return request({
     url: 'role/saveRole',
     method: 'post',
     data: roleDTO
+  })
+}
+
+export function deleteRoleById(roleId) {
+  return request({
+    url: 'role/deleteRole',
+    method: 'post',
+    params: { roleId }
   })
 }
 

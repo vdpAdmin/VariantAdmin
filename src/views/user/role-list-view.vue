@@ -42,9 +42,10 @@
         </el-row>
         <el-row><hr style="border: 0;border-top: 1px dotted #cccccc" /></el-row>
         <el-row :gutter="12" v-for="(rightEntity, entityIdx) in rightEntityList" :key="entityIdx" class="entity-right-row">
-          <el-col :offset="0" :span="4">{{rightEntity.label}}</el-col>
+          <el-col :offset="0" :span="4" :title="rightEntity.entityCode">{{rightEntity.label}}</el-col>
           <el-col :span="5">
-            <el-select v-model="formModel.rightValueMap['r' + rightEntity.entityCode + '-1']" size="mini">
+            <el-select v-model="formModel.rightValueMap['r' + rightEntity.entityCode + '-1']"
+                       @change="(val) => handleReadRightChange(rightEntity.entityCode, val)" size="mini">
               <el-option
                       v-for="item in getRightLevels(rightEntity)"
                       :key="item.value"
@@ -54,7 +55,19 @@
             </el-select>
           </el-col>
           <el-col :span="5">
-            <el-select v-model="formModel.rightValueMap['r' + rightEntity.entityCode + '-2']" size="mini">
+            <el-select v-model="formModel.rightValueMap['r' + rightEntity.entityCode + '-2']"
+                       @change="(val) => handleEntityRightChange(rightEntity.entityCode, 2, val)" size="mini">
+              <el-option
+                      v-for="item in oneselfRightLevels"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+              </el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="5">
+            <el-select v-model="formModel.rightValueMap['r' + rightEntity.entityCode + '-3']"
+                       @change="(val) => handleEntityRightChange(rightEntity.entityCode, 3, val)" size="mini">
               <el-option
                       v-for="item in getRightLevels(rightEntity)"
                       :key="item.value"
@@ -64,17 +77,8 @@
             </el-select>
           </el-col>
           <el-col :span="5">
-            <el-select v-model="formModel.rightValueMap['r' + rightEntity.entityCode + '-3']" size="mini">
-              <el-option
-                      v-for="item in getRightLevels(rightEntity)"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value">
-              </el-option>
-            </el-select>
-          </el-col>
-          <el-col :span="5">
-            <el-select v-model="formModel.rightValueMap['r' + rightEntity.entityCode + '-4']" size="mini">
+            <el-select v-model="formModel.rightValueMap['r' + rightEntity.entityCode + '-4']"
+                       @change="(val) => handleEntityRightChange(rightEntity.entityCode, 4, val)" size="mini">
               <el-option
                       v-for="item in getRightLevels(rightEntity)"
                       :key="item.value"
@@ -91,7 +95,7 @@
         <el-row><hr style="border: 0;border-top: 1px dotted #cccccc" /></el-row>
         <el-row :gutter="12" class="function-right-row">
           <el-col :span="12">
-            <el-form-item label="允许管理实体">
+            <el-form-item label="允许管理实体" title="r6001">
               <el-radio-group v-model="formModel.rightValueMap['r6001']">
                 <el-radio :label="true">是</el-radio>
                 <el-radio :label="false">否</el-radio>
@@ -99,7 +103,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="允许删除实体">
+            <el-form-item label="允许删除实体" title="r6002">
               <el-radio-group v-model="formModel.rightValueMap['r6002']">
                 <el-radio :label="true">是</el-radio>
                 <el-radio :label="false">否</el-radio>
@@ -109,7 +113,7 @@
         </el-row>
         <el-row :gutter="12" class="function-right-row">
           <el-col :span="12">
-            <el-form-item label="允许设计表单布局">
+            <el-form-item label="允许设计表单布局" title="r6003">
               <el-radio-group v-model="formModel.rightValueMap['r6003']">
                 <el-radio :label="true">是</el-radio>
                 <el-radio :label="false">否</el-radio>
@@ -117,7 +121,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="允许设计数据列表">
+            <el-form-item label="允许设计数据列表" title="r6004">
               <el-radio-group v-model="formModel.rightValueMap['r6004']">
                 <el-radio :label="true">是</el-radio>
                 <el-radio :label="false">否</el-radio>
@@ -127,7 +131,7 @@
         </el-row>
         <el-row :gutter="12" class="function-right-row">
           <el-col :span="12">
-            <el-form-item label="允许设置单选项">
+            <el-form-item label="允许设置单选项" title="r6005">
               <el-radio-group v-model="formModel.rightValueMap['r6005']">
                 <el-radio :label="true">是</el-radio>
                 <el-radio :label="false">否</el-radio>
@@ -135,7 +139,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="允许设置多选项">
+            <el-form-item label="允许设置多选项" title="r6006">
               <el-radio-group v-model="formModel.rightValueMap['r6006']">
                 <el-radio :label="true">是</el-radio>
                 <el-radio :label="false">否</el-radio>
@@ -156,7 +160,7 @@
   import DataList from '@/components/business/DataList'
   import {copyNew, formatRefColumn, isEmptyStr} from "@/utils/util";
   import {getDataList} from "@/api/crud";
-  import {getBlankRoleData, saveRoleData} from "@/api/user";
+  import {deleteRoleById, getBlankRoleData, getRoleData, saveRoleData} from "@/api/user";
 
   export default {
     name: "RoleListView",
@@ -195,6 +199,11 @@
           {label: '全部数据', value: 50},
         ],
 
+        oneselfRightLevels: [
+          {label: '无权限', value: 0},
+          {label: '本人', value: 10},
+        ],
+
         simpleRightLevels: [
           {label: '无权限', value: 0},
           {label: '全部数据', value: 50},
@@ -217,7 +226,6 @@
             'r6004': false,
             'r6005': false,
             'r6006': false,
-
           },
         },
 
@@ -234,7 +242,7 @@
     },
     computed: {
       formTitle() {
-        return '新建/编辑权限角色'
+        return !!this.formModel.roleId ? '编辑权限角色' : '新建权限角色'
       },
     },
     mounted() {
@@ -266,14 +274,13 @@
       },
 
       addNewRole() {
-        console.log('add new role!!')
-
         getBlankRoleData().then(res => {
           if (res.error != null) {
             this.$message({ message: res.error, type: 'error' })
             return
           }
 
+          this.formModel.roleId = ''
           this.formModel.roleName = res.data.roleName
           this.formModel.disabled = res.data.disabled
           this.formModel.description = res.data.description
@@ -285,9 +292,46 @@
         })
       },
 
-      saveRole() {
-        console.log(this.formModel)
+      handleReadRightChange(entityCode, readRight) {
+        this.adjustEntityRight(entityCode, 2, readRight)
+        this.adjustEntityRight(entityCode, 3, readRight)
+        this.adjustEntityRight(entityCode, 4, readRight)
+      },
 
+      adjustEntityRight(entityCode, rightType, readRight) {
+        let entityRight = this.formModel.rightValueMap['r' + entityCode + '-' + rightType]
+        if (!entityRight) {
+          entityRight = 0
+        }
+
+        if (entityRight > readRight) {
+          this.formModel.rightValueMap['r' + entityCode + '-' + rightType] = readRight
+        }
+      },
+
+      handleEntityRightChange(entityCode, rightType, val) {
+        //console.log(val)
+        let entityReadRight = this.formModel.rightValueMap['r' + entityCode + '-1']
+        if (!entityReadRight) {
+          entityReadRight = 0
+        }
+
+        if (val > entityReadRight) {
+          let infoContent = '新建权限不能高于查看权限'
+          if (rightType === 2) {
+            //
+          } if (rightType === 3) {
+            infoContent = '修改权限不能高于查看权限'
+          } if (rightType === 4) {
+            infoContent = '删除权限不能高于查看权限'
+          }
+          this.$message.info(infoContent)
+          this.formModel.rightValueMap['r' + entityCode + '-' + rightType] = entityReadRight
+        }
+      },
+
+      saveRole() {
+        //console.log(this.formModel)
         let validResult = false
         this.$refs['roleForm'].validate( (valid) => {
           validResult = valid
@@ -299,6 +343,9 @@
           return
         }
 
+        //TODO 检查实体权限是否合理，比如删除权限是否大于读取权限
+
+
         saveRoleData(this.formModel).then(res => {
           if (res.error != null) {
             this.$message({ message: res.error, type: 'error' })
@@ -307,17 +354,57 @@
 
           this.$message.success('保存成功')
           this.showRoleFormDialogFlag = false
+          this.loadRoleData()
         }).catch(res => {
           this.$message({ message: res.message, type: 'error' })
         })
       },
 
       editRole(row) {
-        console.log(row)
+        if (row.roleId === '023-000000000000000000000000000000000001') {
+          this.$message.info('管理员角色禁止修改！')
+          return
+        }
+
+        getRoleData(row.roleId).then(res => {
+          if (res.error != null) {
+            this.$message({ message: res.error, type: 'error' })
+            return
+          }
+
+          this.formModel.roleId = res.data.roleId
+          this.formModel.roleName = res.data.roleName
+          this.formModel.disabled = res.data.disabled
+          this.formModel.description = res.data.description
+          this.formModel.rightValueMap = res.data.rightValueMap
+          this.rightEntityList = copyNew(res.data.rightEntityList)
+          this.showRoleFormDialogFlag = true
+        }).catch(res => {
+          this.$message({ message: res.message, type: 'error' })
+        })
       },
 
       deleteRole(row) {
-        console.log(row)
+        if (row.roleId === '023-000000000000000000000000000000000001') {
+          this.$message.info('管理员角色禁止删除！')
+          return
+        }
+
+        this.$confirm('是否删除该权限角色?', '删除确认').then(() => {
+          deleteRoleById(row.roleId).then(res => {
+            if (res.error != null) {
+              this.$message({ message: res.error, type: 'error' })
+              return
+            }
+
+            this.$message.success('删除成功')
+            this.loadRoleData()
+          }).catch(res => {
+            this.$message({ message: res.message, type: 'error' })
+          })
+        }).catch(() => {
+          this.$message.info('取消删除')
+        })
       },
 
       handleSizeChange(val) {
