@@ -1,3 +1,4 @@
+import './utils/debug-console'
 import Vue from 'vue'
 import PerfectScrollbar from 'perfect-scrollbar'
 import App from './App.vue'

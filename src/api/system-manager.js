@@ -101,6 +101,14 @@ export function updateField(field, entity) {
   })
 }
 
+export function fieldCanBeEdited(field, entity) {
+  return request({
+    url: 'systemManager/fieldCanBeEdited',
+    method: 'get',
+    params: {entity, field},
+  })
+}
+
 export function fieldCanBeDeleted(field, entity) {
   return request({
     url: 'systemManager/fieldCanBeDeleted',
@@ -176,6 +184,15 @@ export function updateRefField(field, entity, refEntity) {
     url: 'systemManager/updateRefField',
     method: 'post',
     params: {'entity': entity, 'refEntity': refEntity},
+    data: field
+  })
+}
+
+export function updateAnyRefField(field, entity, referTo) {
+  return request({
+    url: 'systemManager/updateAnyRefField',
+    method: 'post',
+    params: {'entity': entity, 'referTo': referTo},
     data: field
   })
 }

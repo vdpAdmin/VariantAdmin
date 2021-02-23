@@ -52,9 +52,13 @@ export const fieldEditorMixin = {
           return
         }
 
+        //console.log(res.data)
         copyObj(this.fieldProps, res.data)
         if (!this.fieldProps.fieldViewModel) {
           this.fieldProps.fieldViewModel = {}
+        }
+        if (!this.fieldProps.referenceSetting) {
+          this.fieldProps.referenceSetting = []
         }
 
         //console.log( this.fieldProps )

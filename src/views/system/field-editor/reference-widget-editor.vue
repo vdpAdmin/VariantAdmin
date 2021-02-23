@@ -12,7 +12,7 @@
         </el-form-item>
         <el-form-item label="引用实体">
           <el-input v-model="refEntityAndFields" readonly>
-              <template v-if="fieldState === 1">
+              <template v-if="(fieldState === 1) || (fieldState === 2)">
               <el-button slot="append" icon="el-icon-close" title="清除"
                          v-if="!!fieldProps.referenceSetting" @click="clearReferTo"></el-button>
               <el-button slot="append" icon="el-icon-search" title="选择" @click="showRefEntitySettingDialog"></el-button>
@@ -294,7 +294,11 @@
       },
 
       setRefEntity() {
-        this.showRefEntityDialogFlag = false
+        if(this.selectedFieldItems.length <= 0) {
+          this.$message.info('请至少选择一个显示字段！')
+          return
+        }
+
         let tempStr = this.refEntityLabel + '['
         for (let i = 0; i < this.selectedFieldItems.length; i++) {
           tempStr += this.selectedFieldItems[i].label + ','
@@ -309,6 +313,8 @@
         })
         this.fieldProps.referenceSetting = [{'entityName': this.currentRefEntity, 'fieldList': fieldList}]
         // console.log( JSON.stringify(this.fieldProps.referenceSetting) )
+
+        this.showRefEntityDialogFlag = false
       },
 
       showEntityListDialog() {

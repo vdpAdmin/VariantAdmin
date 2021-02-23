@@ -123,9 +123,16 @@
 </template>
 
 <script>
-  import { addAnyRefField, getEntitySet, getFieldSet } from '@/api/system-manager'
+  import {
+    addAnyRefField,
+    updateAnyRefField,
+    getEntitySet,
+    getFieldSet,
+    getField,
+    getRefFieldExtras
+  } from '@/api/system-manager'
   import FieldState from "@/views/system/field-state-variables";
-  import {fieldEditorMixin} from "@/views/system/field-editor/field-editor-mixin";
+  import {copyObj} from "@/utils/util";
 
   export default {
     name: "ReferenceListWidgetEditor",
@@ -138,7 +145,6 @@
         default: FieldState.NEW,
       }
     },
-    mixins: [fieldEditorMixin],
     data() {
       return {
         fieldProps: {
@@ -199,9 +205,42 @@
       }
     },
     mounted() {
-      //mixin
+      if (this.fieldState === FieldState.EDIT) {
+        this.getFieldProps()
+      }
     },
     methods: {
+      getFieldProps() {
+        getField(this.fieldName, this.entity).then(res => {
+          if (res.error != null) {
+            this.$message({ message: res.error, type: 'error' })
+            return
+          }
+
+          this.readFieldProps(res.data)
+        }).catch(res => {
+          this.$message({ message: res.message, type: 'error' })
+        })
+      },
+
+      readFieldProps(savedProps) {
+        copyObj(this.fieldProps, savedProps)
+        //console.log(this.fieldProps)
+        if (!!!this.fieldProps.fieldViewModel) {  //设置搜索弹窗默认宽度
+          this.fieldProps['fieldViewModel'] = {
+            searchDialogWidth: 520
+          }
+        }
+        if (!!savedProps.entityCode) {
+          this.fieldProps.entityCode = savedProps.entityCode
+        }
+        //console.log(JSON.stringify(this.fieldProps))
+
+        /*
+        // TODO: 需参考reference-widget-editor.vue实现字段已保存属性的加载显示！！
+         */
+      },
+
       saveField() {
         let validResult = true
         this.$refs['editorForm'].validate((success) => {
@@ -226,14 +265,19 @@
             referToEntities += item
           }
         })
-        addAnyRefField(this.fieldProps, this.entity, referToEntities).then(res => {
+
+        let saveMethod = addAnyRefField
+        if (this.fieldState === FieldState.EDIT) {
+          saveMethod = updateAnyRefField
+        }
+        saveMethod(this.fieldProps, this.entity, referToEntities).then(res => {
           if (res.error != null) {
             this.$message({ message: res.error, type: 'error' })
             return
-          } else {
-            this.$message.success('保存成功')
-            this.$emit('fieldSaved')
           }
+
+          this.$message.success('保存成功')
+          this.$emit('fieldSaved')
         }).catch(res => {
           this.$message({ message: res.message, type: 'error' })
         })
@@ -261,7 +305,11 @@
       },
 
       setRefEntity() {
-        this.showRefEntityDialogFlag = false
+        if(this.selectedFieldItems.length <= 0) {
+          this.$message.info('请至少选择一个显示字段！')
+          return
+        }
+
         let tempStr = this.refEntityLabel + '['
         for (let i = 0; i < this.selectedFieldItems.length; i++) {
           tempStr += this.selectedFieldItems[i].label + ','
@@ -273,6 +321,8 @@
         this.referenceList[this.refEntityIndex].selectedFieldItems = JSON.parse(JSON.stringify(this.selectedFieldItems))
         this.buildReferToAndReferenceSetting()
         // console.log( JSON.stringify(this.fieldProps.referenceSetting) )
+
+        this.showRefEntityDialogFlag = false
       },
 
       showEntityListDialog() {
@@ -336,6 +386,7 @@
       addRefEntity() {
         this.referenceList.push({
           currentRefEntity: '',
+          selectedFieldItems: [],
           refEntityAndFields: ''
         })
       },

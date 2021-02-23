@@ -161,7 +161,7 @@
 <script>
   import {
     getEntityProps, getFieldListOfEntity, getEntitySet, updateEntityLabel, getTextFieldList,
-    updateEntityNameField, fieldCanBeDeleted, deleteField
+    updateEntityNameField, fieldCanBeDeleted, deleteField, fieldCanBeEdited
   } from '@/api/system-manager'
   import {formatBooleanColumn, isEmptyStr, copyNew} from '@/utils/util'
   import EntityPropEditor from "@/views/system/entity-editor/entity-property-editor";
@@ -307,10 +307,24 @@
 
       editTableData(row) {
         if (!!row.type) {
-          this.curEditorType = row.type
-          this.curFWEditor = row.type + 'WE'
-          this.editingFieldName = row.name
-          this.showEditFieldDialogFlag = true
+          fieldCanBeEdited(row.name, this.entity).then(res => {
+            if (res.error != null) {
+              this.$message({message: res.error, type: 'error'})
+              return
+            }
+
+            if (res.data !== true) {
+              this.$message.info('提示：系统字段/保留字段不能编辑！')
+              return
+            }
+
+            this.curEditorType = row.type
+            this.curFWEditor = row.type + 'WE'
+            this.editingFieldName = row.name
+            this.showEditFieldDialogFlag = true
+          }).catch(res => {
+            this.$message({ message: res.message, type: 'error' })
+          })
         }
       },
 

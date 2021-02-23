@@ -65,8 +65,8 @@ module.exports = {
 
   configureWebpack: (config) => {
     config.name = appName
-    //config.devtool = 'source-map' /* 用于IDEA调试Vue项目js代码 */
-    config.devtool = 'eval' /* 加快开发环境构建速度 */
+    config.devtool = 'source-map' /* 用于IDEA调试Vue项目js代码 */
+    //config.devtool = 'eval' /* 加快开发环境构建速度 */
     config.resolve.alias['@'] = resolve('src')
 
     if (IS_PROD) { /* 仅生产环境使用 */
@@ -76,7 +76,6 @@ module.exports = {
         /* 将css和js注入index.html */
         new HtmlWebpackPlugin({
           title: appName,
-          //template: IS_PROD ? './public/index.html' : './public/index.html',
           template: './public/index.html',
           chunks: ['app'],  /* 只注入app*.js和app*.css以及chunk-vendors*.js和chunk-vendors*.css!! */
         }),
