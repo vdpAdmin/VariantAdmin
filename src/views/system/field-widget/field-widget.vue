@@ -84,7 +84,7 @@
     </template>
 
     <template v-if="field.type === 'Tag'" style="width: 100%">
-      <el-select placeholder="多选项" v-model="fieldValue" :disabled="isReadOnly" multiple clearable
+      <el-select placeholder="多选项" v-model="fieldValue" :disabled="isReadOnly" multiple
                  @change="" @remove-tag="" :popper-append-to-body="false" style="width: 100%">
         <!-- el-option value="" label="请选择"></el-option -->
         <el-option v-for="tagItem in fieldProps.tagList" :key="tagItem.value"
@@ -136,26 +136,19 @@
       </el-input>
       -->
       <el-select multiple v-model="fieldValue" value-key="id" :popper-append-to-body="false"
-                 class="hidden-select-caret hidden-select-dropdown">
-        <!--
-        <el-option label="请选择" value=""></el-option>
-        -->
+                 :disabled="isReadOnly" class="x-hidden-select-caret x-hidden-select-dropdown full-width">
         <!--
         <template v-for="(referObj, referObjIdx) in referRecordList">
           <el-option :label="referObj.label" :value="referObj.id" :key="referObjIdx"></el-option>
         </template>
         -->
+        <!--
         <el-option label="管理员" value="023-000000000000000000000000000000000001"></el-option>
+        -->
+        <template v-for="(roleObj, roleIdx) in roleList">
+          <el-option :label="roleObj.roleName" :value="roleObj.roleId" :key="roleIdx"></el-option>
+        </template>
       </el-select>
-      <el-button class="show-dialog-button" icon="el-icon-search" v-if="!isReadOnly"
-                 @click="showReferenceListDialog(field.name)"></el-button>
-
-      <el-dialog title="请选择" :visible.sync="showReferenceListDialogFlag" :show-close="true"
-                 :width="searchDialogWidth + 'px'"
-                 :close-on-click-modal="false" :close-on-press-escape="false" :append-to-body="true">
-        <ReferenceSearchTable ref="referST" :entity="entity" :refField="curRefField"
-                              @recordSelected="addReferListRecord"></ReferenceSearchTable>
-      </el-dialog>
     </template>
 
     <!-- 多个图片上传后的URL要用“||”连接！！ -->
@@ -197,6 +190,7 @@
   import FormState from '@/views/system/form-state-variables'
   import { isDefinedNull, isNull, isNotNull, isEmptyStr } from '@/utils/util'
   import * as SYS from "@/api/system-manager";
+  import {listRole} from "@/api/user";
 
   export default {
     props: {
@@ -231,8 +225,7 @@
         showReferenceDialogFlag: false,
         curRefField: null,
 
-        showReferenceListDialogFlag: false,
-        referRecordList: [],
+        roleList: [],  //权限角色列表
 
         options: [],
 
@@ -247,6 +240,12 @@
       if (((this.field.type === 'Picture') || (this.field.type === 'File')) &&
           ((this.formState === FormState.EDIT) || (this.formState === FormState.VIEW))) {  //初始化图片、文件组件
         this.initFileList()
+      }
+
+      if ((this.field.name === 'roles') && (this.entity === 'User') &&
+          ((this.formState === FormState.NEW) || (this.formState === FormState.EDIT) ||
+              (this.formState === FormState.VIEW))) {
+        this.loadRoleList()
       }
 
       this.buildFieldRule()
@@ -636,27 +635,22 @@
         this.showReferenceDialogFlag = false
       },
 
-      showReferenceListDialog(fieldName) {
-        if ((this.formState === FormState.PREVIEW) || (this.formState === FormState.VIEW)) {
-          return
-        }
-
-        this.showReferenceListDialogFlag = true
-        this.curRefField = fieldName
-      },
-
-      addReferListRecord(recordObj) {
-        this.fieldValue.push(recordObj.id)
-        // this.referRecordList.push({
-        //   label: recordObj.label,
-        //   value: recordObj.id,
-        // })
-        this.showReferenceListDialogFlag = false
-      },
-
       clearReference() {
         this.fieldValue = null
         this.fieldLabel = null
+      },
+
+      loadRoleList() {
+        listRole().then(res => {
+          if (res.error != null) {
+            this.$message({ message: res.error, type: 'error' })
+            return
+          }
+
+          this.roleList = res.data
+        }).catch(res => {
+          this.$message({ message: res.message, type: 'error' })
+        })
       },
 
       initFileList() {
@@ -906,6 +900,10 @@
 
   .hidden-select-dropdown ::v-deep .el-select-dropdown {
     //display: none;
+  }
+
+  .el-select.full-width {
+    width: 100%;
   }
 
   .show-dialog-button {

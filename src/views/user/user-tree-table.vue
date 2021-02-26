@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="hidden-x-scrollbar">
     <el-aside class="left-tree-panel">
       <el-tree
               :data="treeData"
@@ -9,7 +9,28 @@
               ref="tree"
               highlight-current
               :props="defaultProps">
+        <span class="custom-tree-node" slot-scope="{ node, data }" @mouseenter="hoverNodeId = node.id" @mouseleave="hoverNodeId = -1">
+          <span>{{ node.label }}</span>
+          <span :class="{'hidden-action-button': hoverNodeId !== node.id}">
+            <el-button type="text" size="mini" @click="addDepartment(node, data)">添加</el-button>
+            <el-button type="text" size="mini" @click="editDepartment(node, data)">编辑</el-button>
+            <el-button type="text" size="mini" @click="deleteDepartment(node, data)">删除</el-button>
+          </span>
+        </span>
       </el-tree>
+
+      <el-dialog :title="departmentFormTitle" :visible.sync="showDepartmentFormDialogFlag" :show-close="true"
+                 :destroy-on-close="true" :close-on-click-modal="false"
+                 v-if="showDepartmentFormDialogFlag" :close-on-press-escape="false">
+        <FormWidget :entity="'Department'" :layout="departmentLayout" :form-model="departmentFormModel" :field-props-map="departmentFieldPropsMap"
+                    :labels-model="departmentLabelsModel" :form-state="departmentFormState"
+                    ref="departmentFormWidget">
+        </FormWidget>
+        <div slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="saveDepartment" size="small" style="width: 90px">保 存</el-button>
+          <el-button @click="showDepartmentFormDialogFlag = false" size="small">取 消</el-button>
+        </div>
+      </el-dialog>
     </el-aside>
 
     <el-container>
@@ -50,18 +71,6 @@
           <FormWidget :entity="entity" :layout="layout" :form-model="formModel" :field-props-map="fieldPropsMap"
                       :labels-model="labelsModel" :form-state="formState" :extra-rules="extraRules"
                       ref="formWidget">
-            <template v-slot:Slot01>
-              <div>Hello, Slot!</div>
-            </template>
-            <template #Slot02="{formModel}">
-              <!--
-              <div>Hello, {{formModel.workDirection}}!</div>
-              -->
-              <el-input v-model="formModel.workDirection" @change="myChange(formModel)"></el-input>
-            </template>
-            <template #Slot03="{formModel}">
-              <div>Hello, {{formModel.workDirection}}!</div>
-            </template>
           </FormWidget>
           <div slot="footer" class="dialog-footer">
             <el-button type="primary" @click="saveFormData" size="small" style="width: 90px">保 存</el-button>
@@ -77,7 +86,7 @@
   import Vue from "vue"
   import {formatRefColumn, formatRefListColumn, formatOptionColumn,
     isEmptyStr, arrayContain} from '@/utils/util'
-  import {deleteRoleById, deleteUserById, getDepartmentTree} from '@/api/user'
+  import {deleteUserById, getDepartmentTree, saveUser} from '@/api/user'
   import { getDataList } from '@/api/crud'
   import { getFormLayout } from '@/api/system-manager'
   import { formCreateQuery, formUpdateQuery, saveRecord } from '@/api/crud'
@@ -100,6 +109,14 @@
         curUserId: null,
         fieldPropsMap: {},
 
+        showDepartmentFormDialogFlag: false,
+        departmentLayout: {},
+        departmentFormState: 1,
+        departmentFormModel: {},
+        departmentLabelsModel: {},
+        curDepartmentId: null,
+        departmentFieldPropsMap: {},
+
         columns: [
           {prop: 'userName', label: '用户名称', width: '130', align: 'left'},
           {prop: 'loginName', label: '登录名', width: '120', align: 'center'},
@@ -117,6 +134,7 @@
           total: 0
         },
         treeData: [],
+        hoverNodeId: -1,
         defaultProps: {
           children: 'children',
           label: 'label'
@@ -147,6 +165,16 @@
           return '编辑用户'
         } else {
           return '用户详情'
+        }
+      },
+
+      departmentFormTitle() {
+        if (this.formState === FormState.NEW) {
+          return '新建部门'
+        } else if (this.formState === FormState.EDIT) {
+          return '编辑部门'
+        } else {
+          return '查看部门'
         }
       },
     },
@@ -191,7 +219,7 @@
           if ((!!res.data) && (!!res.data.layoutJson)) {
             this.layout = this.buildLayoutObj()
             this.layout.setLayoutPropsFromServer(res)
-            this.handleDeletedFields(res) /* 处理表单已删除字段！！ */
+            this.handleDeletedFields(res, this.layout) /* 处理表单已删除字段！！ */
             this.formModel = res.data.formData
             this.labelsModel = res.data.labelData
             this.fieldPropsMap = res.data.fieldPropsMap
@@ -209,10 +237,10 @@
         })
       },
 
-      handleDeletedFields(res) {
+      handleDeletedFields(res, layoutObj) {
         let deletedFields = res.data.deletedFields
         if (!!deletedFields && Array.isArray(deletedFields)) {
-          let layoutFieldWrappers = this.layout.getAllLayoutFieldWrappers()
+          let layoutFieldWrappers = layoutObj.getAllLayoutFieldWrappers()
           if (!!layoutFieldWrappers && Array.isArray(layoutFieldWrappers)) {
             layoutFieldWrappers.forEach(fw => {
               let deletedFlag = arrayContain(deletedFields, fw.name)
@@ -266,9 +294,10 @@
         getDepartmentTree().then(res => {
           if (res.error != null) {
             this.$message({message: res.error, type: 'error'})
-          } else {
-            this.treeData = res.data
+            return
           }
+
+            this.treeData = res.data
         }).catch(res => {
           this.$message({message: res.message, type: 'error'})
         })
@@ -295,12 +324,12 @@
             this.curUserId = null
             this.layout = this.buildLayoutObj()
             this.layout.setLayoutPropsFromServer(res)
-            this.handleDeletedFields(res) /* 处理表单已删除字段！！ */
+            this.handleDeletedFields(res, this.layout) /* 处理表单已删除字段！！ */
             this.formModel = res.data.formData
             this.labelsModel = res.data.labelData
             this.fieldPropsMap = res.data.fieldPropsMap
             this.formState = FormState.NEW
-            console.log('set formState: ' + this.formState)
+            //console.log('set formState: ' + this.formState)
             this.showFormDialogFlag = true;
             if (!!this.$refs['formWidget']) {
               this.$refs['formWidget'].clearFormValidate()
@@ -325,7 +354,8 @@
           return
         }
 
-        saveRecord(this.entity, this.formState === FormState.NEW ? '' : this.curUserId,
+        //saveRecord(this.entity, this.formState === FormState.NEW ? '' : this.curUserId,
+        saveUser(this.entity, this.formState === FormState.NEW ? '' : this.curUserId,
             this.formModel).then(res => {
           if (res.error != null) {
             this.$message({ message: res.error, type: 'error' })
@@ -365,16 +395,56 @@
         this.loadTableData('(1=1)', this.page.limit, 1)
       },
 
-      myChange(formModel) {
-        console.log(formModel.workDirection)
-        console.log(this.formModel.workDirection)
-      }
+      addDepartment(node, data) {
+        formCreateQuery('Department').then(res => {
+          if (res.error != null) {
+            this.$message({ message: res.error, type: 'error' })
+            return
+          }
+
+          if ((!!res.data) && (!!res.data.layoutJson)) {
+            this.curDepartmentId = null
+            this.departmentLayout = this.buildLayoutObj()
+            this.departmentLayout.setLayoutPropsFromServer(res)
+            this.handleDeletedFields(res, this.departmentLayout) /* 处理表单已删除字段！！ */
+            this.departmentFormModel = res.data.formData
+            this.departmentLabelsModel = res.data.labelData
+            this.departmentFieldPropsMap = res.data.fieldPropsMap
+            this.departmentFormState = FormState.NEW
+            this.showDepartmentFormDialogFlag = true;
+            if (!!this.$refs['departmentDormWidget']) {
+              this.$refs['departmentFormWidget'].clearFormValidate()
+            }
+          } else {
+            this.$message({ message: '加载表单布局出错', type: 'error' })
+          }
+        }).catch(res => {
+          this.$message({ message: res.message, type: 'error' })
+        })
+      },
+
+      editDepartment(node, data) {
+        console.log(node)
+        console.log(data)
+      },
+
+      saveDepartment() {
+
+      },
+
+      deleteDepartment(node, data) {
+
+      },
 
     }
   }
 </script>
 
 <style lang="scss" scoped>
+  .el-container.hidden-x-scrollbar {
+    overflow-x: hidden;  /* 注意：IE浏览器中会出现水平滚动条，暂未找到原因！！ */
+  }
+
   ::v-deep .el-main {
     padding: 0;
   }
@@ -387,6 +457,19 @@
     width: 300px;
     margin-right: 0;
     border-right: 2px dotted #EBEEF5;
+  }
+
+  .hidden-action-button {
+    display: none;
+  }
+
+  .custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right: 8px;
   }
 
   .list-search-panel {

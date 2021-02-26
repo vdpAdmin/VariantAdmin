@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="hidden-x-scrollbar">
     <el-aside class="left-props-panel">
       <el-scrollbar class="props-scrollbar">
       <div class="entity-property">
@@ -501,6 +501,10 @@
 </script>
 
 <style lang="scss" scoped>
+  .el-container.hidden-x-scrollbar {
+    overflow-x: hidden;  /* 注意：IE浏览器中会出现水平滚动条，暂未找到原因！！ */
+  }
+
   .entity-property {
     font-size: 12px;
 

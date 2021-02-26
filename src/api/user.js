@@ -15,6 +15,15 @@ export function logout() {
   })
 }
 
+export function saveUser(entity, id, formModel) {
+  return request({
+    url: 'user/saveUser',
+    method: 'post',
+    params: {entity, id},
+    data: formModel,
+  })
+}
+
 export function deleteUserById(userId) {
   return request({
     url: 'user/deleteUser',
@@ -62,3 +71,9 @@ export function deleteRoleById(roleId) {
   })
 }
 
+export function listRole() {
+  return request({
+    url: 'role/listRole',
+    method: 'get',
+  })
+}
