@@ -38,7 +38,7 @@
               <el-switch v-model="entityProps.detailEntityFlag" style="float: right" disabled></el-switch>
             </el-form-item>
             <el-form-item label="所属主实体：" v-if="!!entityProps.detailEntityFlag">
-              <el-input type="text" v-model="entityProps.mainEntity" disabled></el-input>
+              <el-input type="text" v-model="entityProps.mainEntity.label" disabled></el-input>
             </el-form-item>
           </el-form>
         </div>

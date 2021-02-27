@@ -318,6 +318,12 @@ export default {
     background: #ffffff;
   }
 
+  .el-main.card-container:after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+
   .el-header.entity-action-section {
     height: 54px !important;  /* 解决内部按钮居中问题 */
     line-height: 54px;  /* 解决内部按钮居中问题 */
@@ -335,6 +341,7 @@ export default {
     cursor: pointer;
 
     ::v-deep .el-card__header {
+      height: 42px;  /* 指定高度，以避免中英文字体高度不一致导致el-card自动换行出现问题 */
       text-align: center;
       border-bottom: 1px dotted #EBEEF5;
       padding: 12px;
