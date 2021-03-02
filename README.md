@@ -3,7 +3,7 @@
 
 在线演示：http://120.92.142.115:8080/
 
-后端开源仓库：https://github.com/vdpAdmin/VariantServer
+后端代码仓库：https://github.com/vdpAdmin/VariantServer
 
 语雀文档：https://www.yuque.com/variantdev/atxy8t
 
