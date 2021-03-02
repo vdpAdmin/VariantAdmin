@@ -3,6 +3,8 @@
 
 在线演示：http://120.92.142.115:8080/
 
+后端开源仓库：https://github.com/vdpAdmin/VariantServer
+
 语雀文档：https://www.yuque.com/variantdev/atxy8t
 
 掘金文章汇总：https://juejin.cn/user/2076298067593629/posts
