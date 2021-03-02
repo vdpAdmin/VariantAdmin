@@ -44,8 +44,8 @@
         </div>
         <div class="search-panel-right">
           <el-input type="text" size="small" placeholder="请输入关键词搜索" :clearable="true" class="v-middle"
-                    v-model="keyword" @keyup.enter.native="searchData" @clear="clearSearch">
-            <el-button slot="append" icon="el-icon-search" @click="searchData"></el-button>
+                    v-model="keyword" @keyup.enter.native="searchData" @clear="clearSearch" suffix-icon="el-icon-search">
+            <el-button slot="append" icon="el-icon-refresh-right" title="刷新" @click="refreshTableData"></el-button>
           </el-input>
         </div>
       </el-header>
@@ -89,7 +89,7 @@
   import {deleteUserById, getDepartmentTree, saveUser} from '@/api/user'
   import { getDataList } from '@/api/crud'
   import { getFormLayout } from '@/api/system-manager'
-  import { formCreateQuery, formUpdateQuery, saveRecord } from '@/api/crud'
+  import { createRecord, updateRecord, saveRecord } from '@/api/crud'
   import { createLayoutObj } from '@/views/system/layout/form-layout-object.js'
   import FormState from '@/views/system/form-state-variables'
   import FormWidget from '@/views/system/field-widget/form-widget'
@@ -197,20 +197,21 @@
       // 改变分页大小处理
       handleSizeChange(val) {
         this.page.limit = val
-        this.loadTableData(this.searchFilter, this.page.limit, 1)
+        this.page.pageNo = 1
+        this.loadTableData(this.searchFilter)
       },
 
       // 翻页处理
       handleCurrentChange(val) {
         this.page.pageNo = val
-        this.loadTableData(this.searchFilter, this.page.limit, this.page.pageNo)
+        this.loadTableData(this.searchFilter)
       },
 
       editTableData(row) {
         //console.log(row.userId)
 
         this.curUserId  = row.userId
-        formUpdateQuery(this.entity, this.curUserId).then(res => {
+        updateRecord(this.entity, this.curUserId).then(res => {
           if (res.error != null) {
             this.$message({ message: res.error, type: 'error' })
             return
@@ -266,7 +267,7 @@
             }
 
             this.$message.success('删除成功')
-            this.loadTableData('(1=1)', this.page.limit, 1)
+            this.loadTableData(this.searchFilter)
           }).catch(res => {
             this.$message({ message: res.message, type: 'error' })
           })
@@ -275,9 +276,9 @@
         })
       },
 
-      loadTableData(filter, pageSize, pageNo) {
+      loadTableData(filter) {
         let realFilter = isEmptyStr(filter) ? '(1=1)' : filter
-        getDataList('User', this.fieldsList, realFilter, pageSize, pageNo).then(res => {
+        getDataList('User', this.fieldsList, realFilter, this.page.limit, this.page.pageNo).then(res => {
           if (res.error != null) {
             this.$message({message: res.error, type: 'error'})
           } else {
@@ -304,7 +305,7 @@
       },
 
       initTableData() {
-        this.loadTableData('(1=1)', this.page.limit, 1)
+        this.loadTableData('(1=1)')
       },
 
       buildLayoutObj() {
@@ -314,7 +315,7 @@
       },
 
       addUser() {
-        formCreateQuery(this.entity).then(res => {
+        createRecord(this.entity).then(res => {
           if (res.error != null) {
             this.$message({ message: res.error, type: 'error' })
             return
@@ -329,7 +330,6 @@
             this.labelsModel = res.data.labelData
             this.fieldPropsMap = res.data.fieldPropsMap
             this.formState = FormState.NEW
-            //console.log('set formState: ' + this.formState)
             this.showFormDialogFlag = true;
             if (!!this.$refs['formWidget']) {
               this.$refs['formWidget'].clearFormValidate()
@@ -354,19 +354,18 @@
           return
         }
 
-        //saveRecord(this.entity, this.formState === FormState.NEW ? '' : this.curUserId,
         saveUser(this.entity, this.formState === FormState.NEW ? '' : this.curUserId,
             this.formModel).then(res => {
           if (res.error != null) {
             this.$message({ message: res.error, type: 'error' })
             return
-          } else {
-            this.formModel = res.data.formData
-            this.labelsModel = res.data.labelData
-            this.$message({ message: '保存成功', type: 'success' })
-            this.showFormDialogFlag = false
-            this.loadTableData('(1=1)', this.page.limit, 1)
           }
+
+          this.formModel = res.data.formData
+          this.labelsModel = res.data.labelData
+          this.$message({ message: '保存成功', type: 'success' })
+          this.showFormDialogFlag = false
+          this.loadTableData(this.searchFilter)
         }).catch(res => {
           this.$message({ message: res.message, type: 'error' })
         })
@@ -375,7 +374,7 @@
       searchData() {
         if (isEmptyStr(this.keyword)) {
           if (!isEmptyStr(this.searchFilter)) {
-            this.loadTableData('(1=1)', this.page.limit, 1)
+            this.loadTableData('(1=1)')
           }
 
           return
@@ -383,7 +382,7 @@
 
         let searchContent = this.keyword.trim()
         this.searchFilter = `([userName] like '%${searchContent}%') or ([loginName] like '%${searchContent}%') or ([departmentId.departmentName] like '%${searchContent}%')`
-        this.loadTableData(this.searchFilter, this.page.limit, 1)
+        this.loadTableData(this.searchFilter)
       },
 
       clearSearch() {
@@ -392,11 +391,15 @@
         }
 
         this.searchFilter = ''
-        this.loadTableData('(1=1)', this.page.limit, 1)
+        this.loadTableData(this.searchFilter)
+      },
+
+      refreshTableData() {
+        this.loadTableData(this.searchFilter)
       },
 
       addDepartment(node, data) {
-        formCreateQuery('Department').then(res => {
+        createRecord('Department').then(res => {
           if (res.error != null) {
             this.$message({ message: res.error, type: 'error' })
             return

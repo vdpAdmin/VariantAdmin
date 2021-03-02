@@ -106,7 +106,7 @@ export default {
       slotRules: {
         name: [
           {required: true, message: '请输入插槽名称', trigger: 'blur'},
-          {pattern: /^[[A-Z]+[A-Za-z\d_-]*$/, message: '请以英文大写字母开头，不能包含中文字符，中间可输入字母、下划线或横杠', trigger: 'blur'},
+          {pattern: /^[A-Z]+[A-Za-z\d_-]*$/, message: '请以英文大写字母开头，不可包含中文，中间可输入字母、下划线或横杠', trigger: 'blur'},
           {min: 2, max: 30, message: '请输入至少两个字符', trigger: 'blur'},
         ],
         /*

@@ -9,7 +9,7 @@ export function refFieldQuery(entity, field, pageNo, pageSize) {
   })
 }
 
-export function formCreateQuery(entity) {
+export function createRecord(entity) {
   return request({
     url: 'crud/formCreateQuery',
     method: 'get',
@@ -17,7 +17,7 @@ export function formCreateQuery(entity) {
   })
 }
 
-export function formUpdateQuery(entity, id) {
+export function updateRecord(entity, id) {
   return request({
     url: 'crud/formUpdateQuery',
     method: 'get',
@@ -31,6 +31,14 @@ export function saveRecord(entity, id, formModel) {
     method: 'post',
     params: {entity, id},
     data: formModel,
+  })
+}
+
+export function deleteRecord(id) {
+  return request({
+    url: 'crud/deleteRecord',
+    method: 'post',
+    params: { id }
   })
 }
 

@@ -4,7 +4,8 @@
                :custom-edit-action="true" @editTableRow="editRole"
                :custom-delete-action="true" @deleteTableRow="deleteRole"
                :custom-data-load="true" :page="page" @handleSizeChange="handleSizeChange"
-               @handleCurrentChange="handleCurrentChange" @searchData="searchRole" @clearSearch="clearSearch"></data-list>
+               @handleCurrentChange="handleCurrentChange" @refreshTable="handelTableRefresh"
+               @searchData="searchRole" @clearSearch="clearSearch"></data-list>
 
     <el-dialog :title="formTitle" :visible.sync="showRoleFormDialogFlag" v-if="showRoleFormDialogFlag"
                :destroy-on-close="true" :close-on-click-modal="false" class="small-padding"
@@ -131,7 +132,7 @@
         </el-row>
         <el-row :gutter="12" class="function-right-row">
           <el-col :span="12">
-            <el-form-item label="允许设置单选项" title="r6005">
+            <el-form-item label="允许管理单选项" title="r6005">
               <el-radio-group v-model="formModel.rightValueMap['r6005']">
                 <el-radio :label="true">是</el-radio>
                 <el-radio :label="false">否</el-radio>
@@ -139,7 +140,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="允许设置多选项" title="r6006">
+            <el-form-item label="允许管理多选项" title="r6006">
               <el-radio-group v-model="formModel.rightValueMap['r6006']">
                 <el-radio :label="true">是</el-radio>
                 <el-radio :label="false">否</el-radio>
@@ -187,6 +188,8 @@
           sizes: [10, 20, 30, 50, 100],
           total: 0
         },
+
+        searchFilter: '',
 
         showRoleFormDialogFlag: false,
 
@@ -262,11 +265,11 @@
         getDataList(this.entity, this.fieldsList, realFilter, this.page.limit, this.page.pageNo).then(res => {
           if (res.error != null) {
             this.$message({message: res.error, type: 'error'})
-          } else {
-            this.$refs['dataList'].loadTableData(this.columns, res.data.dataList)
-            this.page.total = res.data.pagination.total
-            //console.log(res.data)
+            return
           }
+
+          this.$refs['dataList'].setTableData(this.columns, res.data.dataList)
+          this.page.total = res.data.pagination.total
         }).catch(res => {
           this.$message({message: res.message, type: 'error'})
         })
@@ -310,7 +313,6 @@
       },
 
       handleEntityRightChange(entityCode, rightType, val) {
-        //console.log(val)
         let entityReadRight = this.formModel.rightValueMap['r' + entityCode + '-1']
         if (!entityReadRight) {
           entityReadRight = 0
@@ -331,7 +333,6 @@
       },
 
       saveRole() {
-        //console.log(this.formModel)
         let validResult = false
         this.$refs['roleForm'].validate( (valid) => {
           validResult = valid
@@ -345,7 +346,6 @@
 
         //TODO 检查实体权限是否合理，比如删除权限是否大于读取权限
 
-
         saveRoleData(this.formModel).then(res => {
           if (res.error != null) {
             this.$message({ message: res.error, type: 'error' })
@@ -354,7 +354,7 @@
 
           this.$message.success('保存成功')
           this.showRoleFormDialogFlag = false
-          this.loadRoleData()
+          this.loadRoleData(this.searchFilter)
         }).catch(res => {
           this.$message({ message: res.message, type: 'error' })
         })
@@ -398,7 +398,7 @@
             }
 
             this.$message.success('删除成功')
-            this.loadRoleData()
+            this.loadRoleData(this.searchFilter)
           }).catch(res => {
             this.$message({ message: res.message, type: 'error' })
           })
@@ -408,19 +408,28 @@
       },
 
       handleSizeChange(val) {
-        console.log(val)
+        this.page.limit = val
+        this.page.pageNo = 1
+        this.loadRoleData(this.searchFilter)
       },
 
       handleCurrentChange(val) {
+        this.page.pageNo = val
+        this.loadRoleData(this.searchFilter)
+      },
 
+      handelTableRefresh() {
+        this.loadRoleData(this.searchFilter)
       },
 
       searchRole(keyword) {
-        console.log(keyword)
+        this.searchFilter = `([roleName] like '%${keyword}%')`
+        this.loadRoleData(this.searchFilter)
       },
 
       clearSearch() {
-        console.log('clear search...')
+        this.searchFilter = ''
+        this.loadRoleData();
       },
 
     },

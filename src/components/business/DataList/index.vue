@@ -7,15 +7,13 @@
         <el-button type="danger" size="small" icon="el-icon-delete">删除</el-button>
         <el-button size="small">修改登录密码</el-button>
         -->
+        <!-- TODO: 此处应该增加按钮插槽!! -->
       </div>
       <div class="search-panel-right">
         <el-input type="text" size="small" placeholder="请输入关键词搜索" :clearable="true" class="v-middle"
                   v-model="keyword" @keyup.enter.native="searchData" @clear="clearSearch"
                   suffix-icon="el-icon-search">
-          <!--
-          <el-button slot="append" icon="el-icon-search" @click="searchData"></el-button>
-          -->
-          <el-button slot="append" icon="el-icon-refresh-right" @click="" title="刷新"></el-button>
+          <el-button slot="append" icon="el-icon-refresh-right" @click="refreshTableData" title="刷新"></el-button>
         </el-input>
       </div>
     </el-header>
@@ -52,10 +50,11 @@
 <script>
   import FormWidget from "@/views/system/field-widget/form-widget";
   import FormState from "@/views/system/form-state-variables";
-  import {initDataList, formCreateQuery, formUpdateQuery, saveRecord} from "@/api/crud";
-  import {arrayContain, setColumnFormatter} from "@/utils/util";
+  import {initDataList, createRecord, updateRecord, saveRecord, deleteRecord, getDataList} from "@/api/crud";
+  import {arrayContain, isEmptyStr, setColumnFormatter} from "@/utils/util";
   import Vue from "vue";
   import {createLayoutObj} from "@/views/system/layout/form-layout-object";
+  import {deleteUserById} from "@/api/user";
 
   export default {
     name: "DataList",
@@ -89,23 +88,32 @@
           }
         }
       },
+
+      crudMethods: {
+        type: Object,
+        default: () => {
+          return {
+            initDataList: initDataList,
+            createRecord: createRecord,
+            updateRecord: updateRecord,
+            saveRecord: saveRecord,
+            deleteRecord: deleteRecord
+          }
+        }
+      },
     },
     data() {
       return {
         entityLabel: '',
         idFieldName: null,
+        nameFieldName: null,
         curRecordId: null,
 
         keyword: '',
+        searchFilter: '',
 
         columns: [],
         tableData: [],
-        // page: {
-        //   pageNo: 1,
-        //   limit: 20,
-        //   sizes: [10, 20, 30, 50, 100],
-        //   total: 0
-        // },
 
         showFormDialogFlag: false,
         layout: {},
@@ -140,8 +148,9 @@
     },
     methods: {
       resizeTableHeight() {  /* table自适应高度 */
-        this.tableHeight = this.$refs.tableContainer.$el.offsetHeight - 42
-        //console.log(this.tableHeight)
+        if (!!this.$refs.tableContainer.$el) {
+          this.tableHeight = this.$refs.tableContainer.$el.offsetHeight - 42
+        }
       },
 
       initTable() {
@@ -154,23 +163,26 @@
           return
         }
 
-        initDataList(this.entity).then(res => {
+        this.crudMethods.initDataList(this.entity).then(res => {
           if (res.error != null) {
             this.$message({ message: res.error, type: 'error' })
             return
           }
 
-          this.loadTableData(res.data.columnList, res.data.dataList)
+          this.setTableData(res.data.columnList, res.data.dataList)
           this.page.total = res.data.pagination.total
           this.entityLabel = res.data.entityBasicInfo.label
           this.idFieldName = res.data.entityBasicInfo.idField
+          if (!!res.data.entityBasicInfo.nameField) {
+            this.nameFieldName = res.data.entityBasicInfo.nameField
+          }
         }).catch(res => {
           this.$message({ message: res.message, type: 'error' })
         })
       },
 
-      /*  */
-      loadTableData(columnList, recordList) {
+      /**/
+      setTableData(columnList, recordList) {
         this.columns = columnList
         this.columns.forEach(col => {
           setColumnFormatter(col)
@@ -178,9 +190,23 @@
         this.tableData = recordList
       },
 
-      getTableData(filter, pageSize, pageNo) {
-        //TODO!!!
-        //TODO!!!
+      /* 保持查询条件，重新当前页加载数据 */
+      loadTableData(filter) {
+        let realFilter = isEmptyStr(filter) ? '(1=1)' : filter
+        let fieldsList = ''
+        this.columns.forEach(col => {
+          fieldsList += col.prop + ','
+        })
+        getDataList(this.entity, fieldsList, realFilter, this.page.limit, this.page.pageNo).then(res => {
+          if (res.error != null) {
+            this.$message({message: res.error, type: 'error'})
+          } else {
+            this.tableData = res.data.dataList
+            this.page.total = res.data.pagination.total
+          }
+        }).catch(res => {
+          this.$message({message: res.message, type: 'error'})
+        })
       },
 
       // 改变分页大小处理
@@ -191,7 +217,8 @@
         }
 
         this.page.limit = val
-        this.getTableData(this.searchFilter, this.page.limit, 1)
+        this.page.pageNo = 1
+        this.loadTableData(this.searchFilter)
       },
 
       // 翻页处理
@@ -202,7 +229,7 @@
         }
 
         this.page.pageNo = val
-        this.getTableData(this.searchFilter, this.page.limit, this.page.pageNo)
+        this.loadTableData(this.searchFilter)
       },
 
       searchData() {
@@ -211,7 +238,15 @@
           return
         }
 
-        //TODO
+        if (!this.nameFieldName) {
+          this.$message.error('当前实体[' + this.entity + ']未指定名称字段，不能搜索！')
+          return
+        }
+
+        let searchField = this.nameFieldName
+        let searchWord = this.keyword
+        this.searchFilter = `([${searchField}] like '%${searchWord}%')`
+        this.loadTableData(this.searchFilter)
       },
 
       clearSearch() {
@@ -221,7 +256,17 @@
           return
         }
 
-        //TODO
+        this.searchFilter = ''
+        this.loadTableData();
+      },
+
+      refreshTableData() {
+        if (this.customDataLoad === true) {
+          this.$emit('refreshTable')  //父组件发出消息，由父组件处理
+          return
+        }
+
+        this.loadTableData(this.searchFilter)
       },
 
       addNewRecord() {
@@ -230,7 +275,7 @@
           return
         }
 
-        formCreateQuery(this.entity).then(res => {
+        this.crudMethods.createRecord(this.entity).then(res => {
           if (res.error != null) {
             this.$message({ message: res.error, type: 'error' })
             return
@@ -245,7 +290,6 @@
             this.labelsModel = res.data.labelData
             this.fieldPropsMap = res.data.fieldPropsMap
             this.formState = FormState.NEW
-            //console.log('set formState: ' + this.formState)
             this.showFormDialogFlag = true;
             if (!!this.$refs['formWidget']) {
               this.$refs['formWidget'].clearFormValidate()
@@ -285,7 +329,7 @@
         }
 
         this.curRecordId  = row[this.idFieldName]
-        formUpdateQuery(this.entity, this.curRecordId).then(res => {
+        this.crudMethods.updateRecord(this.entity, this.curRecordId).then(res => {
           if (res.error != null) {
             this.$message({ message: res.error, type: 'error' })
             return
@@ -299,7 +343,6 @@
             this.labelsModel = res.data.labelData
             this.fieldPropsMap = res.data.fieldPropsMap
             this.formState = FormState.EDIT //编辑记录状态
-            //console.log('set formState: ' + this.formState)
             this.showFormDialogFlag = true;
             if (!!this.$refs['formWidget']) {
               this.$refs['formWidget'].clearFormValidate()
@@ -324,7 +367,7 @@
           return
         }
 
-        saveRecord(this.entity, this.formState === FormState.NEW ? '' : this.curRecordId,
+        this.crudMethods.saveRecord(this.entity, this.formState === FormState.NEW ? '' : this.curRecordId,
             this.formModel).then(res => {
           if (res.error != null) {
             this.$message({ message: res.error, type: 'error' })
@@ -335,6 +378,7 @@
           this.labelsModel = res.data.labelData
           this.$message({ message: '保存成功', type: 'success' })
           this.showFormDialogFlag = false
+          this.loadTableData(this.searchFilter)
         }).catch(res => {
           this.$message({ message: res.message, type: 'error' })
         })
@@ -346,9 +390,22 @@
           return
         }
 
-        //TODO
-      },
+        this.$confirm('是否删除该数据?', '删除确认').then(() => {
+          this.crudMethods.deleteRecord(row[this.idFieldName]).then(res => {
+            if (res.error != null) {
+              this.$message({ message: res.error, type: 'error' })
+              return
+            }
 
+            this.$message.success('删除成功')
+            this.loadTableData(this.searchFilter)
+          }).catch(res => {
+            this.$message({ message: res.message, type: 'error' })
+          })
+        }).catch(() => {
+          this.$message.info('取消删除')
+        })
+      },
 
     },
   }

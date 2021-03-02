@@ -41,12 +41,21 @@ const routes = [
         meta: { group: true, title: '业务相关' },
         children: [
           {
-            path: 'account-list',
-            name: 'AccountList',
+            path: 'company-list',
+            name: 'CompanyList',
             component: () => import('@/views/business/data-list-view'),
-            props: {entity: 'Account'},
-            meta: { title: '客户管理', icon: 'el-icon-s-custom'}
+            props: {entity: 'DemoCompany'},
+            meta: { title: '演示公司管理', icon: 'el-icon-s-shop'}
           },
+
+          {
+            path: 'contact-list',
+            name: 'ContactList',
+            component: () => import('@/views/business/data-list-view'),
+            props: {entity: 'DemoContact'},
+            meta: { title: '演示联系人管理', icon: 'el-icon-s-custom'}
+          },
+
         ]
       },
 

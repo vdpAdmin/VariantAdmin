@@ -19,7 +19,7 @@
         </el-form-item>
         <el-form-item label="字段标签统一宽度(单位：像素)：">
           <el-input-number type="number" v-model="layout.labelWidth" @change="formLabelWidthChanged"
-                           class="label-width-input" :min="0" :step="1"></el-input-number>
+                           :min="0" :step="1"></el-input-number>
         </el-form-item>
         <el-form-item label="统一行间距(单位：像素)：">
           <el-input-number type="number" v-model="layout.lineSpacing" :min="0" :step="1">
@@ -99,7 +99,7 @@
       <el-form label-position="top" size="mini">
         <el-form-item label="当前标签宽度(单位：像素)：">
           <el-input-number type="number" v-model.number="layout.activeFieldLabelWidth" @change="labelWidthChanged"
-                           class="label-width-input" :min="0" :step="1"></el-input-number>
+                           :min="0" :step="1"></el-input-number>
         </el-form-item>
         <!--
         <el-form-item label="标签对齐方式：">
@@ -256,10 +256,6 @@ export default {
         .cell-delete-button {
           margin-left: 6px;
         }
-      }
-
-      .label-width-input {
-        width: 150px;
       }
 
       .field-placeholder-input {
