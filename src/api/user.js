@@ -39,6 +39,23 @@ export function getDepartmentTree() {
   })
 }
 
+export function saveDepartment(entity, id, formModel) {
+  return request({
+    url: 'department/saveDepartment',
+    method: 'post',
+    params: {entity, id},
+    data: formModel,
+  })
+}
+
+export function deleteDepartmentById(departmentId) {
+  return request({
+    url: 'department/deleteDepartment',
+    method: 'post',
+    params: { departmentId }
+  })
+}
+
 export function getBlankRoleData() {
   return request({
     url: 'role/getBlankRoleData',

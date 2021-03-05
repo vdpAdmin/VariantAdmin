@@ -98,20 +98,6 @@
           },
         },
 
-        rules: {
-          name: [
-            {required: true, message: '请输入字段名称', trigger: 'blur'},
-            {pattern: /^[a-z]+[A-Za-z\d]*$/, message: '请以小写英文字母开头，中间可输入字母或数字，禁止中文', trigger: 'blur'},
-            {min: 2, max: 30, message: '请输入至少两个字符', trigger: 'blur'},
-          ],
-          label: [
-            {required: true, message: '请输入显示名称', trigger: 'blur'},
-            {pattern: /^[A-Za-z\d\u4e00-\u9fa5]+[_-]*/, message: '请以中文、英文字母、数字开头，中间可输入下划线或横杠',
-              trigger: 'blur'},
-            {min: 2, max: 30, message: '请输入至少两个字符', trigger: 'blur'},
-          ],
-        },
-
         validators: [],
       }
     },

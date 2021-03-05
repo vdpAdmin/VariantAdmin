@@ -5,6 +5,8 @@
 
 后端代码仓库：https://github.com/vdpAdmin/VariantServer
 
+国内gitee仓库：https://gitee.com/vdpadmin/VariantServer
+
 语雀文档：https://www.yuque.com/variantdev/atxy8t
 
 掘金文章汇总：https://juejin.cn/user/2076298067593629/posts

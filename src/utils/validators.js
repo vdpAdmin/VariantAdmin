@@ -34,6 +34,32 @@ const FormValidators = {
     }
   },
 
+  /* 禁止空白字符开头 */
+  noBlankStart(rule, value, callback) {
+
+  },
+
+  /* 禁止空白字符结尾 */
+  noBlankEnd(rule, value, callback) {
+
+  },
+
+  /* 字母开头，仅可包含数字 */
+  letterStartNumberIncluded(rule, value, callback) {
+    //空值不校验
+    if ((isEmptyStr(value) || isNull(value)) && (value !== ' ')) {
+      callback()
+      return
+    }
+
+    let reg = /^[A-Za-z]+[A-Za-z\d]*$/
+    if (!reg.test(value)) {
+      callback(new Error('[' + rule.label + ']必须字母开头，仅可包含数字'))
+    } else {
+      callback()
+    }
+  },
+
   /* 禁止输入中文 */
   noChinese(rule, value, callback) {
     //空值不校验

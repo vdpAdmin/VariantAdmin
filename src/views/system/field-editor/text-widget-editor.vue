@@ -14,9 +14,9 @@
           <el-input-number v-model="fieldProps.fieldViewModel.minLength"
                            :min="0" :max="190" style="width: 100%"></el-input-number>
         </el-form-item>
-        <el-form-item label="最大长度（不能超过190字符）">
+        <el-form-item label="最大长度（建议不超过200）">
           <el-input-number v-model="fieldProps.fieldViewModel.maxLength"
-                           :min="0" :max="190" style="width: 100%"></el-input-number>
+                           :min="0" :max="500" style="width: 100%"></el-input-number>
         </el-form-item>
         <el-form-item label="字段校验函数(可多选)" prop="fieldViewModel.validators">
           <el-select multiple allow-create filterable default-first-option :popper-append-to-body="false"
@@ -93,27 +93,14 @@
           'updatable': true,
           'fieldViewModel': {
             'minLength': 0,
-            'maxLength': 190,
+            'maxLength': 200,
             'validators': [],
           },
         },
 
-        rules: {
-          name: [
-            {required: true, message: '请输入字段名称', trigger: 'blur'},
-            {pattern: /^[a-z]+[A-Za-z\d]*$/, message: '请以小写英文字母开头，中间可输入字母或数字，禁止中文', trigger: 'blur'},
-            {min: 2, max: 30, message: '请输入至少两个字符', trigger: 'blur'},
-          ],
-          label: [
-            {required: true, message: '请输入显示名称', trigger: 'blur'},
-            {pattern: /^[A-Za-z\d\u4e00-\u9fa5]+[_-]*/, message: '请以中文、英文字母、数字开头，中间可输入下划线或横杠',
-              trigger: 'blur'},
-            {min: 2, max: 30, message: '请输入至少两个字符', trigger: 'blur'},
-          ],
-        },
-
         validators: [
           {value: 'number', label: '数字'},
+          {value: 'letterStartNumberIncluded', label: '字母开头可包含数字'},
           {value: 'mobile', label: '手机号码'},
           {value: 'noChinese', label: '禁止中文'},
           {value: 'email', label: '电子邮箱'},

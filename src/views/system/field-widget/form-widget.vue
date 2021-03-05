@@ -32,7 +32,7 @@
                                :label-width="!!layout.labelWidth ? layout.labelWidth : 75"></component>
                   </template>
                   <!-- 此处可增加更多非数据绑定的表单组件，比如静态HTML内容、文字描述等等 -->
-                  <field-widget v-else :entity="entity" :field="cellItem.fields[0]" :form-model="formModel"
+                  <field-widget v-else :entity="entity" :ref="cellItem.fields[0].name" :field="cellItem.fields[0]" :form-model="formModel"
                                 :labels-model="labelsModel" :form-state="formState" :label-align="labelAlign"
                                 :field-props="fieldPropsMap[cellItem.fields[0].name]"
                                 :label-width="(!!cellItem.fields[0].labelWidth) ? cellItem.fields[0].labelWidth : (!!layout.labelWidth ? layout.labelWidth : 75)"

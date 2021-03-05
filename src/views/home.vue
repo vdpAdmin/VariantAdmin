@@ -8,6 +8,7 @@
         <div>
           <a href="https://github.com/vdpAdmin/VariantAdmin" target="_blank"><svg-icon icon-class="github" />GitHub</a>
           <a href="https://www.yuque.com/variantdev/atxy8t" target="_blank"><svg-icon icon-class="document" />文档</a>
+          <a href="javascript:void(0)">Q群：836657858</a>
         </div>
       </div>
     </el-footer>

@@ -8,6 +8,7 @@
               node-key="id"
               ref="tree"
               highlight-current
+              :expand-on-click-node="false"
               :props="defaultProps">
         <span class="custom-tree-node" slot-scope="{ node, data }" @mouseenter="hoverNodeId = node.id" @mouseleave="hoverNodeId = -1">
           <span>{{ node.label }}</span>
@@ -86,10 +87,8 @@
   import Vue from "vue"
   import {formatRefColumn, formatRefListColumn, formatOptionColumn,
     isEmptyStr, arrayContain} from '@/utils/util'
-  import {deleteUserById, getDepartmentTree, saveUser} from '@/api/user'
-  import { getDataList } from '@/api/crud'
-  import { getFormLayout } from '@/api/system-manager'
-  import { createRecord, updateRecord, saveRecord } from '@/api/crud'
+  import {deleteDepartmentById, deleteUserById, getDepartmentTree, saveDepartment, saveUser} from '@/api/user'
+  import { createRecord, updateRecord, getDataList } from '@/api/crud'
   import { createLayoutObj } from '@/views/system/layout/form-layout-object.js'
   import FormState from '@/views/system/form-state-variables'
   import FormWidget from '@/views/system/field-widget/form-widget'
@@ -208,8 +207,6 @@
       },
 
       editTableData(row) {
-        //console.log(row.userId)
-
         this.curUserId  = row.userId
         updateRecord(this.entity, this.curUserId).then(res => {
           if (res.error != null) {
@@ -225,7 +222,6 @@
             this.labelsModel = res.data.labelData
             this.fieldPropsMap = res.data.fieldPropsMap
             this.formState = FormState.EDIT //编辑记录状态
-            console.log('set formState: ' + this.formState)
             this.showFormDialogFlag = true;
             if (!!this.$refs['formWidget']) {
               this.$refs['formWidget'].clearFormValidate()
@@ -298,7 +294,7 @@
             return
           }
 
-            this.treeData = res.data
+          this.treeData = res.data
         }).catch(res => {
           this.$message({message: res.message, type: 'error'})
         })
@@ -399,6 +395,8 @@
       },
 
       addDepartment(node, data) {
+        console.log(node)
+
         createRecord('Department').then(res => {
           if (res.error != null) {
             this.$message({ message: res.error, type: 'error' })
@@ -415,6 +413,10 @@
             this.departmentFieldPropsMap = res.data.fieldPropsMap
             this.departmentFormState = FormState.NEW
             this.showDepartmentFormDialogFlag = true;
+
+            // 上级部门赋值
+            this.departmentFormModel['parentDepartmentId'] = node.data.id
+            this.departmentLabelsModel['parentDepartmentId'] = node.data.label
             if (!!this.$refs['departmentDormWidget']) {
               this.$refs['departmentFormWidget'].clearFormValidate()
             }
@@ -427,16 +429,89 @@
       },
 
       editDepartment(node, data) {
-        console.log(node)
-        console.log(data)
+        if (node.data.id === '022-000000000000000000000000000000000001') {
+          this.$message.info('根部门不可编辑！')
+          return
+        }
+
+        this.curDepartmentId = node.data.id
+        updateRecord('Department', this.curDepartmentId).then(res => {
+          if (res.error != null) {
+            this.$message({ message: res.error, type: 'error' })
+            return
+          }
+
+          if ((!!res.data) && (!!res.data.layoutJson)) {
+            this.departmentLayout = this.buildLayoutObj()
+            this.departmentLayout.setLayoutPropsFromServer(res)
+            this.handleDeletedFields(res, this.departmentLayout) /* 处理表单已删除字段！！ */
+            this.departmentFormModel = res.data.formData
+            this.departmentLabelsModel = res.data.labelData
+            this.departmentFieldPropsMap = res.data.fieldPropsMap
+            this.departmentFormState = FormState.EDIT //编辑记录状态
+            this.showDepartmentFormDialogFlag = true;
+            if (!!this.$refs['departmentFormWidget']) {
+              this.$refs['departmentFormWidget'].clearFormValidate()
+            }
+          } else {
+            this.$message({ message: '加载表单布局出错', type: 'error' })
+          }
+        }).catch(res => {
+          this.$message({ message: res.message, type: 'error' })
+        })
       },
 
       saveDepartment() {
+        let validResult = false
+        this.$refs['departmentFormWidget'].validateForm( (valid) => {
+          validResult = valid
+          if (!!!valid) {
+            return false
+          }
+        })
+        if (!!!validResult) {
+          return
+        }
 
+        saveDepartment('Department', this.departmentFormState === FormState.NEW ? '' : this.curDepartmentId,
+            this.departmentFormModel).then(res => {
+          if (res.error != null) {
+            this.$message({ message: res.error, type: 'error' })
+            return
+          }
+
+          this.departmentFormModel = res.data.formData
+          this.departmentLabelsModel = res.data.labelData
+          this.$message({ message: '保存成功', type: 'success' })
+          this.showDepartmentFormDialogFlag = false
+          this.initTreeData()
+        }).catch(res => {
+          this.$message({ message: res.message, type: 'error' })
+        })
       },
 
       deleteDepartment(node, data) {
+        if (node.data.id === '022-000000000000000000000000000000000001') {
+          this.$message.info('根部门不可删除！')
+          return
+        }
 
+        let dptId = node.data.id
+        this.$confirm('是否删除该部门?', '删除确认').then(() => {
+          deleteDepartmentById(dptId).then(res => {
+            if (res.error != null) {
+              this.$message({ message: res.error, type: 'error' })
+              return
+            }
+
+            this.$message.success('删除成功')
+            this.initTreeData()
+          }).catch(res => {
+            this.$message({ message: res.message, type: 'error' })
+          })
+        }).catch(() => {
+          this.$message.info('取消删除')
+        })
       },
 
     }

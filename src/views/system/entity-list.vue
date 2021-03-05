@@ -1,11 +1,4 @@
 <template>
-  <!--
-  <el-breadcrumb separator-class="el-icon-arrow-right">
-    <el-breadcrumb-item :to="{ path: '/' }">系统设置</el-breadcrumb-item>
-    <el-breadcrumb-item>实体管理</el-breadcrumb-item>
-  </el-breadcrumb>
-  -->
-
   <el-container>
     <el-header class="entity-action-section">实体列表
       <div style="float: right">
@@ -25,20 +18,6 @@
         <div v-if="!!entityItem.systemEntityFlag" class="system-flag system-entity"><i title="系统实体">系</i></div>
         <div v-if="!!!entityItem.detailEntityFlag" class="entity-flag main-entity"><i title="主实体">主</i></div>
         <div v-if="!!entityItem.detailEntityFlag" class="entity-flag detail-entity"><i title="明细实体">从</i></div>
-
-        <!--
-        <div v-if="(hoverEntityIdx === entityIdx) && !!!entityItem.detailEntityFlag" class="entity-item-tool">
-          <el-button type="text" class="field-tool" icon="el-icon-menu"
-                     @click="gotoEntityManager(entityItem.name, entityItem.label)">字段管理</el-button>
-          <el-button type="text" class="layout-tool" icon="el-icon-s-operation"
-                     @click="gotoFormLayout(entityItem.name, entityItem.label)">表单设计</el-button>
-        </div>
-        <div v-if="(hoverEntityIdx === entityIdx) && !!entityItem.detailEntityFlag" class="entity-item-tool">
-          <el-button type="text" class="field-tool-center" icon="el-icon-menu"
-                     @click="gotoEntityManager(entityItem.name, entityItem.label)">字段管理</el-button>
-        </div>
-        -->
-
 
       </el-card>
 
@@ -97,13 +76,7 @@ export default {
     }
   },
   computed: {
-    isLayoutable() {
-      return !!this.selectedEntityObj && (this.selectedEntityObj.layoutable === true)
-    },
 
-    isListable() {
-
-    },
   },
   mounted () {
     this.getEntityList()
@@ -139,17 +112,16 @@ export default {
       if (!this.$refs['EPEditor'].validateForm())
         return
 
-      // console.log(this.newEntityProps)
       let mainEntityName = !!!this.newEntityProps.mainEntity ? 'null' : this.newEntityProps.mainEntity
       createEntity(this.newEntityProps, mainEntityName).then(res => {
         if (res.error != null) {
           this.$message({ message: res.error, type: 'error' })
           return
-        } else {
-          this.$message.success('保存成功')
-          this.showNewEntityDialogFlag = false
-          this.getEntityList() // this.$emit('fieldSaved')
         }
+
+        this.$message.success('保存成功')
+        this.showNewEntityDialogFlag = false
+        this.getEntityList()
       }).catch(res => {
         this.$message({ message: res.message, type: 'error' })
       })
@@ -157,19 +129,13 @@ export default {
 
     onEnterEntity(entityName, entityLabel, entityIdx) {
       this.hoverEntityIdx = entityIdx
-      // this.selectedEntityObj = {
-      //   name: entityName,
-      //   label: entityLabel
-      // }
     },
 
     onLeaveEntity() {
       this.hoverEntityIdx = -1
-      // this.selectedEntityObj = null
     },
 
     gotoEntityManager(selectedEntityObj) {
-      //this.$router.push({name: 'EntityManager', params: {'entity': entityName, entityLabel}})
       this.$router.push({name: 'FieldManager',
         params: {
           entity: selectedEntityObj.name,
@@ -193,6 +159,11 @@ export default {
     },
 
     gotoListSetting(selectedEntityObj) {
+      if (selectedEntityObj.systemEntityFlag === true) {
+        this.$message.info('系统实体不需要设计列表')
+        return
+      }
+
       if (selectedEntityObj.listable !== true) {
         this.$message.info('当前实体不允许设计列表')
         return
@@ -266,7 +237,6 @@ export default {
     hideContextMenu(event) {
       this.contextMenuVisible = false
       this.clearHideMenuTimer()
-      //document.removeEventListener('click', this.hideContextMenu)
     },
 
     contextMenuSetting(menu, event) {
@@ -275,7 +245,6 @@ export default {
       } else {
         menu.style.left = event.clientX + 1 + 'px'
       }
-      //document.addEventListener('click', this.hideContextMenu)
       if (event.clientY > 700) {
         menu.style.top = event.clientY - 30 + 'px'
       } else {
@@ -293,6 +262,7 @@ export default {
         label: entity.label,
         layoutable: entity.layoutable,
         listable: entity.listable,
+        systemEntityFlag: entity.systemEntityFlag,
       }
       let menu = document.querySelector('#contextMenu')
       this.contextMenuSetting(menu, event)

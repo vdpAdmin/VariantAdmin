@@ -515,6 +515,11 @@ export default {
     },
 
     editFieldProps(field) {
+      if (!!field.reserved) {
+        this.$message.info('系统字段不可编辑')
+        return
+      }
+
       this.curEditorType = field.type
       this.curFWEditor = field.type + 'WE'
       this.editingFieldName = field.name
